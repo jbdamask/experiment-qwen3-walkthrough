@@ -76,3 +76,21 @@
   - Card hover states work well with `hover:border-*` and `hover:bg-*` combinations
 ---
 
+## 2026-01-20 - US-004
+- **What was implemented:** Text prompt input component
+  - Created TextPromptInput component with textarea for entering prompts
+  - Added submit button with disabled state when input is empty or over limit
+  - Character count display showing current/max characters
+  - Max length validation with visual feedback (red border when over limit)
+  - Ctrl+Enter keyboard shortcut for quick submission
+  - Proper accessibility with aria-label and aria-describedby attributes
+  - Integrated component into App.tsx with handlePromptSubmit callback
+- **Files changed:**
+  - src/components/TextPromptInput.tsx - new component with textarea, submit button, character count
+  - src/App.tsx - added TextPromptInput with onSubmit handler
+- **Learnings for future iterations:**
+  - Use `aria-describedby` to link character count to textarea for screen readers
+  - Conditional styling with template literals works well for validation states
+  - Consider keyboard shortcuts (Ctrl+Enter) for form submission in text-heavy inputs
+---
+
