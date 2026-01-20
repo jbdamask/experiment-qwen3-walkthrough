@@ -3,6 +3,7 @@ import { MainLayout } from "./components/MainLayout";
 import { WelcomeSection } from "./components/WelcomeSection";
 import { CapabilitiesSection } from "./components/CapabilitiesSection";
 import { UseCasesSection } from "./components/UseCasesSection";
+import { CodeExamplesPanel } from "./components/CodeExamplesPanel";
 import { TextPromptInput } from "./components/TextPromptInput";
 import { ImageInput } from "./components/ImageInput";
 import { InputPreviewPanel } from "./components/InputPreviewPanel";
@@ -220,6 +221,7 @@ function App() {
         <WelcomeSection />
         <CapabilitiesSection />
         <UseCasesSection />
+        <CodeExamplesPanel />
         <ImageInput
           key={imageInputKey}
           onImageChange={handleImageChange}
