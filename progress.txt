@@ -9,6 +9,8 @@
 - Run `npm run typecheck` to verify TypeScript types
 - Run `npm run lint` to run ESLint
 - Run `npm run build` to build for production
+- Components go in `src/components/` with named exports
+- The dev-browser skill is unavailable; use `npm run build` to verify app works
 
 ---
 
@@ -35,5 +37,25 @@
   - Tailwind CSS v4 uses `@import "tailwindcss";` instead of `@tailwind` directives
   - Use `@tailwindcss/vite` plugin for Vite integration (no separate tailwind.config.js needed)
   - Vite creates project with eslint.config.js flat config format
+---
+
+## 2026-01-20 - US-002
+- **What was implemented:** App layout shell with header and main content area
+  - Created Header component with app title 'Qwen3-VL Showcase' and mobile menu toggle
+  - Created Sidebar component placeholder for session history with responsive behavior
+  - Created MainLayout component combining header, sidebar, and main content area
+  - Updated App.tsx to use the new layout components
+  - Removed unused App.css (using Tailwind CSS only)
+- **Files changed:**
+  - src/components/Header.tsx - new header component with responsive design
+  - src/components/Sidebar.tsx - new sidebar placeholder component
+  - src/components/MainLayout.tsx - new layout wrapper component
+  - src/App.tsx - updated to use MainLayout
+  - src/App.css - deleted (unused)
+- **Learnings for future iterations:**
+  - Components are in src/components/ directory
+  - Use Tailwind's responsive prefixes (sm:, md:, lg:) for breakpoints
+  - Mobile-first approach with sidebar hidden by default on small screens
+  - The dev-browser skill is not available in this environment; use `npm run build` to verify
 ---
 
