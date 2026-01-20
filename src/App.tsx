@@ -3,7 +3,7 @@ import { WelcomeSection } from "./components/WelcomeSection";
 import { CapabilitiesSection } from "./components/CapabilitiesSection";
 import { UseCasesSection } from "./components/UseCasesSection";
 import { TextPromptInput } from "./components/TextPromptInput";
-import { ImageUpload } from "./components/ImageUpload";
+import { ImageInput } from "./components/ImageInput";
 
 function App() {
   const handlePromptSubmit = (prompt: string) => {
@@ -11,8 +11,14 @@ function App() {
     // TODO: Handle prompt submission in future stories
   };
 
-  const handleImageChange = (file: File | null) => {
-    console.log("Image changed:", file?.name ?? "cleared");
+  const handleImageChange = (data: { file: File | null; url: string | null }) => {
+    if (data.file) {
+      console.log("Image file uploaded:", data.file.name);
+    } else if (data.url) {
+      console.log("Image URL provided:", data.url);
+    } else {
+      console.log("Image cleared");
+    }
     // TODO: Handle image change in future stories
   };
 
@@ -22,7 +28,7 @@ function App() {
         <WelcomeSection />
         <CapabilitiesSection />
         <UseCasesSection />
-        <ImageUpload onImageChange={handleImageChange} />
+        <ImageInput onImageChange={handleImageChange} />
         <TextPromptInput onSubmit={handlePromptSubmit} />
       </div>
     </MainLayout>
