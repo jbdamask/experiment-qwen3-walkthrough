@@ -189,8 +189,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 12,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created FollowUpInput component for asking follow-up questions, ConversationThread component for chat-style visual thread, updated API to pass conversationHistory for context continuity, added ConversationTurn type and addFollowUpToExchange to session context"
     },
     {
       "id": "US-013",

@@ -256,3 +256,28 @@
   - State persistence in React context is sufficient for session-scoped data (no localStorage needed)
 ---
 
+## 2026-01-20 - US-012
+- **What was implemented:** Context-aware follow-up prompts
+  - Created FollowUpInput component with auto-resizing textarea and Ctrl+Enter submission
+  - Created ConversationThread component showing chat-style visual thread with timestamps
+  - Added ConversationTurn type in src/types/session.ts for tracking individual turns
+  - Updated HistoryExchange to include conversationHistory array
+  - Extended session context with addFollowUpToExchange function
+  - Updated API (api/generate.ts) to accept and process conversationHistory for context continuity
+  - Updated frontend API utility to pass conversation history
+  - Integrated conversation display in App.tsx with follow-up input after responses
+- **Files changed:**
+  - src/types/session.ts - added ConversationTurn type, extended HistoryExchange
+  - src/contexts/sessionContextDef.ts - added addFollowUpToExchange to context value
+  - src/contexts/SessionContext.tsx - implemented addFollowUpToExchange, initialize conversationHistory
+  - src/utils/api.ts - added conversationHistory parameter to generateCompletion
+  - api/generate.ts - updated buildMessages to include conversation history
+  - src/components/FollowUpInput.tsx - new follow-up input component
+  - src/components/ConversationThread.tsx - new visual thread component with markdown rendering
+  - src/App.tsx - integrated conversation thread and follow-up input
+- **Learnings for future iterations:**
+  - Use role-based styling (user/assistant) for chat-style interfaces with flex justify-end/start
+  - Pass conversation history as array of turns for multi-turn context in vision-language models
+  - Auto-resize textarea using scrollHeight in useEffect based on value changes
+---
+
