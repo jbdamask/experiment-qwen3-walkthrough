@@ -13,6 +13,9 @@
 - The dev-browser skill is unavailable; use `npm run build` to verify app works
 - API serverless functions go in `api/` folder with Vercel-style handler exports
 - Frontend API utilities are in `src/utils/api.ts` - use `generateCompletion()` to call the API
+- ESLint react-refresh: separate context definition (.ts), provider component (.tsx), and hooks into different files
+- Types/interfaces go in `src/types/` folder, hooks go in `src/hooks/` folder
+- Session state: use useSession() hook from `src/hooks/useSession.ts`
 
 ---
 
@@ -225,5 +228,31 @@
   - Use useCallback for handlers that depend on state to avoid stale closures
   - role="status" and aria-live="polite" for loading indicators for screen readers
   - role="alert" and aria-live="assertive" for error messages for screen readers
+---
+
+## 2026-01-20 - US-011
+- **What was implemented:** Session history sidebar
+  - Created SessionContext (sessionContextDef.ts + SessionContext.tsx) for global history state
+  - Created HistoryExchange type in src/types/session.ts for type safety
+  - Created useSession hook in src/hooks/useSession.ts for consuming context
+  - Created HistoryItem component showing truncated prompt preview, image thumbnail, and timestamp
+  - Updated Sidebar component to display list of past exchanges with selection state
+  - Updated App.tsx to integrate with session context: adds exchanges on API success, displays selected exchange
+  - Exchange count shown in sidebar header when history exists
+  - Auto-clears selection when user starts typing a new prompt
+- **Files changed:**
+  - src/types/session.ts - new HistoryExchange type definition
+  - src/contexts/sessionContextDef.ts - new context definition (separated for ESLint react-refresh)
+  - src/contexts/SessionContext.tsx - new SessionProvider component
+  - src/hooks/useSession.ts - new hook for consuming session context
+  - src/components/HistoryItem.tsx - new component for individual history entries
+  - src/components/Sidebar.tsx - updated with history list and selection
+  - src/main.tsx - wrapped App with SessionProvider
+  - src/App.tsx - integrated session context for history management
+- **Learnings for future iterations:**
+  - ESLint react-refresh/only-export-components forbids exporting hooks and React context from same file as components
+  - Separate context definition (createContext) into its own .ts file, provider component into .tsx, and hook into hooks folder
+  - Use crypto.randomUUID() for generating unique IDs client-side
+  - State persistence in React context is sufficient for session-scoped data (no localStorage needed)
 ---
 
