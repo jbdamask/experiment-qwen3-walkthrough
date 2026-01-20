@@ -136,3 +136,24 @@
   - Combined components are cleaner than separate related components
 ---
 
+## 2026-01-20 - US-007
+- **What was implemented:** Combined input preview panel
+  - Created InputPreviewPanel component showing text prompt and image together
+  - Two-column responsive grid layout (image on left, prompt on right)
+  - Validation messages panel listing missing inputs (image, prompt, over limit)
+  - Ready-to-submit badge (green with checkmark) when all inputs valid
+  - Incomplete badge (amber with warning icon) when validation fails
+  - Proper object URL lifecycle management with useMemo and useEffect
+  - Updated TextPromptInput to support controlled mode (value + onChange props)
+  - Lifted prompt state to App.tsx to share with InputPreviewPanel
+- **Files changed:**
+  - src/components/InputPreviewPanel.tsx - new component with preview and validation
+  - src/components/TextPromptInput.tsx - added value and onChange props for controlled mode
+  - src/App.tsx - lifted prompt state, added InputPreviewPanel
+- **Learnings for future iterations:**
+  - ESLint react-hooks/set-state-in-effect forbids setState inside useEffect
+  - Use useMemo for URL.createObjectURL and useEffect+useRef for cleanup
+  - Support both controlled and uncontrolled modes in input components for flexibility
+  - Use useMemo with ?? operator for computed values with fallbacks
+---
+
