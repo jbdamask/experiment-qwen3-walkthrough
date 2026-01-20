@@ -253,8 +253,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 16,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created PresetPrompts component with 6 example tasks covering object description, OCR, spatial reasoning, visual Q&A, chart analysis, and scene understanding. Each preset has a sample image from Unsplash and clicking populates both prompt and image inputs."
     },
     {
       "id": "US-017",

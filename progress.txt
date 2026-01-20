@@ -340,3 +340,25 @@
   - Close dropdowns on mousedown (not click) for better UX with button interactions
 ---
 
+## 2026-01-20 - US-016
+- **What was implemented:** Preset example prompts
+  - Created PresetPrompts component with 6 preset examples
+  - Examples cover: object description, OCR (text extraction), spatial reasoning, visual Q&A, chart analysis, scene understanding
+  - Each preset has a sample image from Unsplash (w=800 for reasonable size)
+  - Category badges with color-coding (blue, green, purple, amber, rose)
+  - Grid layout (1 col mobile, 2 cols md, 3 cols lg)
+  - Clicking a preset populates both the prompt input and image URL input
+  - Uses the same remount pattern (imageInputKey + imageInputInitialUrl) as edit exchange
+  - Added handleSelectPreset callback to App.tsx
+  - Disabled state during loading
+- **Files changed:**
+  - src/components/PresetPrompts.tsx - new component with preset cards and selection handler
+  - src/App.tsx - added import, handleSelectPreset callback, and PresetPrompts integration
+  - prd.json - marked US-016 as passed
+- **Learnings for future iterations:**
+  - Reuse the imageInputKey + imageInputInitialUrl pattern to populate ImageInput from external sources
+  - Use loading="lazy" on images for better performance in grids
+  - Unsplash images support ?w=800 query param for sizing
+  - Category-based color coding makes UI scannable
+---
+

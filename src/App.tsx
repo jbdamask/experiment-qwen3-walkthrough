@@ -4,6 +4,7 @@ import { WelcomeSection } from "./components/WelcomeSection";
 import { CapabilitiesSection } from "./components/CapabilitiesSection";
 import { UseCasesSection } from "./components/UseCasesSection";
 import { CodeExamplesPanel } from "./components/CodeExamplesPanel";
+import { PresetPrompts } from "./components/PresetPrompts";
 import { TextPromptInput } from "./components/TextPromptInput";
 import { ImageInput } from "./components/ImageInput";
 import { InputPreviewPanel } from "./components/InputPreviewPanel";
@@ -215,12 +216,40 @@ function App() {
     setImageUrl(null);
   }, [selectExchange]);
 
+  // Handle selecting a preset prompt - populate inputs with preset values
+  const handleSelectPreset = useCallback((presetPrompt: string, presetImageUrl: string) => {
+    // Populate the prompt input
+    setPrompt(presetPrompt);
+
+    // Clear any selected exchange so we're in "new" mode
+    selectExchange(null);
+
+    // Clear previous response state
+    setResponse(null);
+    setLastSubmittedPrompt(null);
+    setLastSubmittedImageUrl(null);
+    setError(null);
+    setValidationErrors([]);
+
+    // Set the preset image URL
+    setImageInputInitialUrl(presetImageUrl);
+    // Increment key to force remount of ImageInput with new initial state
+    setImageInputKey((prev) => prev + 1);
+    // Clear the current image state as well
+    setImageFile(null);
+    setImageUrl(null);
+  }, [selectExchange]);
+
   return (
     <MainLayout onEditExchange={handleEditExchange}>
       <div className="space-y-6">
         <WelcomeSection />
         <CapabilitiesSection />
         <UseCasesSection />
+        <PresetPrompts
+          onSelectPreset={handleSelectPreset}
+          disabled={isLoading}
+        />
         <CodeExamplesPanel />
         <ImageInput
           key={imageInputKey}
