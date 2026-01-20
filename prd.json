@@ -237,8 +237,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 15,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created ExportButton component with dropdown menu for JSON and plain text export options. Export button placed in Sidebar header. Filenames include timestamp (qwen3-vl-conversation-YYYYMMDD-HHMMSS.ext)"
     },
     {
       "id": "US-016",

@@ -321,3 +321,22 @@
   - Sub-components (like CodeExample) can be defined in the same file if only used by the main component
 ---
 
+## 2026-01-20 - US-015
+- **What was implemented:** Export conversation transcript
+  - Created ExportButton component with dropdown menu for export options
+  - Export as JSON with structured data (conversation metadata, timestamps, turns)
+  - Export as plain text with readable conversation format
+  - Filenames include timestamp (qwen3-vl-conversation-YYYYMMDD-HHMMSS.ext)
+  - Dropdown closes when clicking outside or pressing Escape
+  - Button disabled when no exchanges exist
+  - Integrated export button into Sidebar header next to "Session History" title
+- **Files changed:**
+  - src/components/ExportButton.tsx - new component with export dropdown and download logic
+  - src/components/Sidebar.tsx - added ExportButton integration in header
+- **Learnings for future iterations:**
+  - Use Blob and URL.createObjectURL for client-side file downloads
+  - Don't forget to call URL.revokeObjectURL after triggering download
+  - Use role="menu" and role="menuitem" with aria-haspopup/aria-expanded for dropdown menus
+  - Close dropdowns on mousedown (not click) for better UX with button interactions
+---
+
