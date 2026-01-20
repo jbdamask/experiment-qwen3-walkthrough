@@ -11,6 +11,8 @@
 - Run `npm run build` to build for production
 - Components go in `src/components/` with named exports
 - The dev-browser skill is unavailable; use `npm run build` to verify app works
+- API serverless functions go in `api/` folder with Vercel-style handler exports
+- Frontend API utilities are in `src/utils/api.ts` - use `generateCompletion()` to call the API
 
 ---
 
@@ -155,5 +157,32 @@
   - Use useMemo for URL.createObjectURL and useEffect+useRef for cleanup
   - Support both controlled and uncontrolled modes in input components for flexibility
   - Use useMemo with ?? operator for computed values with fallbacks
+---
+
+## 2026-01-20 - US-008
+- **What was implemented:** API proxy serverless function
+  - Created Vercel-compatible serverless function at api/generate.ts
+  - POST endpoint accepting prompt (string) and optional image (file/url type with data)
+  - Forwards requests to Qwen3-VL API (dashscope.aliyuncs.com compatible endpoint)
+  - Request body validation with helpful error messages
+  - Comprehensive error handling for API failures, network errors, and config errors
+  - Supports both base64 file uploads and URL images
+  - Returns structured response with id, content, and usage stats
+  - Created frontend utility module at src/utils/api.ts with generateCompletion function
+  - Added @vercel/node for serverless function types
+  - Created tsconfig.api.json for API folder TypeScript compilation
+- **Files changed:**
+  - api/generate.ts - new serverless function for Qwen3-VL API proxy
+  - src/utils/api.ts - new utility module with API types and helper functions
+  - tsconfig.api.json - new TypeScript config for api/ folder
+  - tsconfig.json - added reference to tsconfig.api.json
+  - package.json, package-lock.json - added @vercel/node dependency
+  - prd.json - marked US-008 as passed
+- **Learnings for future iterations:**
+  - Use separate tsconfig files for different execution contexts (browser vs node)
+  - Vercel serverless functions go in api/ folder with export default handler
+  - Use satisfies keyword for type-safe response objects
+  - Environment variables: QWEN_API_KEY, QWEN_API_ENDPOINT, QWEN_MODEL
+  - Base64 images need data URI prefix for Qwen API (data:image/jpeg;base64,...)
 ---
 
