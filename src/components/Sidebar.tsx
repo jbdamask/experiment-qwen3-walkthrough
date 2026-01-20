@@ -1,5 +1,6 @@
 import { useSession } from "../hooks/useSession";
 import { HistoryItem } from "./HistoryItem";
+import { ExportButton } from "./ExportButton";
 import type { HistoryExchange } from "../types/session";
 
 interface SidebarProps {
@@ -46,11 +47,14 @@ export function Sidebar({ isOpen, onClose, onEditExchange }: SidebarProps) {
       >
         <div className="flex flex-col h-full">
           <div className="p-4 border-b border-slate-200">
-            <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">
-              Session History
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">
+                Session History
+              </h2>
+              <ExportButton exchanges={exchanges} />
+            </div>
             {exchanges.length > 0 && (
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 mt-2">
                 {exchanges.length} exchange{exchanges.length !== 1 ? "s" : ""}
               </p>
             )}
