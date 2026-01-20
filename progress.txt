@@ -302,3 +302,22 @@
   - Blob URLs are temporary and won't survive component remounts; only restore URL-based images
 ---
 
+## 2026-01-20 - US-014
+- **What was implemented:** Code examples panel with Python and JavaScript
+  - Created CodeExamplesPanel component with collapsible panel (click header to expand/collapse)
+  - Added Python example using the requests library with both URL and file upload methods
+  - Added TypeScript example using fetch API with typed interfaces and both input methods
+  - Dark theme code blocks (bg-gray-900) with monospace font for syntax styling
+  - Copy button for each code example with visual feedback ("Copied!" state)
+  - Note/warning about API key security at the bottom of the panel
+  - Integrated into App.tsx after UseCasesSection
+- **Files changed:**
+  - src/components/CodeExamplesPanel.tsx - new component with collapsible panel and code examples
+  - src/App.tsx - added import and included CodeExamplesPanel in layout
+- **Learnings for future iterations:**
+  - For syntax highlighting without external libraries, use dark background (bg-gray-900) with light text (text-gray-100) for code blocks
+  - Use template literals for multi-line code strings to preserve formatting
+  - Collapsible panels use aria-expanded and aria-controls for accessibility
+  - Sub-components (like CodeExample) can be defined in the same file if only used by the main component
+---
+
