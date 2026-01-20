@@ -5,6 +5,7 @@ type InputMode = "file" | "url";
 interface ImageInputProps {
   onImageChange?: (data: { file: File | null; url: string | null }) => void;
   disabled?: boolean;
+  initialUrl?: string | null;
 }
 
 const ACCEPTED_FORMATS = ["image/jpeg", "image/png", "image/gif", "image/webp"];
@@ -16,11 +17,13 @@ const URL_REGEX = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
 export function ImageInput({
   onImageChange,
   disabled = false,
+  initialUrl,
 }: ImageInputProps) {
-  const [mode, setMode] = useState<InputMode>("file");
+  // If initialUrl is provided, start in URL mode with that value
+  const [mode, setMode] = useState<InputMode>(initialUrl ? "url" : "file");
   const [file, setFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState(initialUrl ?? "");
   const [urlError, setUrlError] = useState<string | null>(null);
   const [urlPreviewValid, setUrlPreviewValid] = useState(false);
   const [isDragging, setIsDragging] = useState(false);

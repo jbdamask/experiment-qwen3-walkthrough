@@ -13,6 +13,7 @@ import { ConversationThread } from "./components/ConversationThread";
 import { FollowUpInput } from "./components/FollowUpInput";
 import { generateCompletion } from "./utils/api";
 import { useSession } from "./hooks/useSession";
+import type { HistoryExchange } from "./types/session";
 
 function App() {
   const [prompt, setPrompt] = useState("");
@@ -28,6 +29,10 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+
+  // For editing a previous prompt - use a key to force ImageInput remount
+  const [imageInputKey, setImageInputKey] = useState(0);
+  const [imageInputInitialUrl, setImageInputInitialUrl] = useState<string | null>(null);
 
   // Session context for history management
   const { addExchange, addFollowUpToExchange, selectedExchangeId, getExchangeById, selectExchange } = useSession();
@@ -179,13 +184,47 @@ function App() {
     }
   };
 
+  // Handle editing a previous exchange - populate inputs with previous prompt/image
+  const handleEditExchange = useCallback((exchange: HistoryExchange) => {
+    // Populate the prompt input with the previous prompt
+    setPrompt(exchange.prompt);
+
+    // Clear any selected exchange so we're in "new" mode
+    selectExchange(null);
+
+    // Clear previous response state
+    setResponse(null);
+    setLastSubmittedPrompt(null);
+    setLastSubmittedImageUrl(null);
+    setError(null);
+    setValidationErrors([]);
+
+    // If the exchange had an image URL (not a blob URL), set it for editing
+    // Blob URLs from file uploads won't work (they're temporary), but regular URLs will
+    if (exchange.imageUrl && !exchange.imageUrl.startsWith("blob:")) {
+      setImageInputInitialUrl(exchange.imageUrl);
+    } else {
+      // Clear any previous initial URL
+      setImageInputInitialUrl(null);
+    }
+    // Increment key to force remount of ImageInput with new initial state
+    setImageInputKey((prev) => prev + 1);
+    // Clear the current image state as well
+    setImageFile(null);
+    setImageUrl(null);
+  }, [selectExchange]);
+
   return (
-    <MainLayout>
+    <MainLayout onEditExchange={handleEditExchange}>
       <div className="space-y-6">
         <WelcomeSection />
         <CapabilitiesSection />
         <UseCasesSection />
-        <ImageInput onImageChange={handleImageChange} />
+        <ImageInput
+          key={imageInputKey}
+          onImageChange={handleImageChange}
+          initialUrl={imageInputInitialUrl}
+        />
         <TextPromptInput
           onSubmit={handlePromptSubmit}
           onChange={handlePromptChange}

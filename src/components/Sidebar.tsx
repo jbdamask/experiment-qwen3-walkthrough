@@ -1,17 +1,25 @@
 import { useSession } from "../hooks/useSession";
 import { HistoryItem } from "./HistoryItem";
+import type { HistoryExchange } from "../types/session";
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  onEditExchange?: (exchange: HistoryExchange) => void;
 }
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
+export function Sidebar({ isOpen, onClose, onEditExchange }: SidebarProps) {
   const { exchanges, selectedExchangeId, selectExchange } = useSession();
 
   const handleSelectExchange = (id: string) => {
     selectExchange(id);
     // Close sidebar on mobile when selecting an item
+    onClose();
+  };
+
+  const handleEditExchange = (exchange: HistoryExchange) => {
+    onEditExchange?.(exchange);
+    // Close sidebar on mobile when editing
     onClose();
   };
 
@@ -61,6 +69,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                       exchange={exchange}
                       isSelected={exchange.id === selectedExchangeId}
                       onSelect={handleSelectExchange}
+                      onEdit={handleEditExchange}
                     />
                   </li>
                 ))}

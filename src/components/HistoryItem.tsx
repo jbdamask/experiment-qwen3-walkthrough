@@ -4,9 +4,14 @@ interface HistoryItemProps {
   exchange: HistoryExchange;
   isSelected: boolean;
   onSelect: (id: string) => void;
+  onEdit: (exchange: HistoryExchange) => void;
 }
 
-export function HistoryItem({ exchange, isSelected, onSelect }: HistoryItemProps) {
+export function HistoryItem({ exchange, isSelected, onSelect, onEdit }: HistoryItemProps) {
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering onSelect
+    onEdit(exchange);
+  };
   // Truncate prompt for preview (max 50 chars)
   const truncatedPrompt =
     exchange.prompt.length > 50
@@ -61,14 +66,42 @@ export function HistoryItem({ exchange, isSelected, onSelect }: HistoryItemProps
             {truncatedPrompt}
           </p>
 
-          {/* Timestamp */}
-          <p
-            className={`text-xs mt-1 ${
-              isSelected ? "text-indigo-600" : "text-slate-500"
-            }`}
-          >
-            {formattedDate} at {formattedTime}
-          </p>
+          {/* Timestamp and Edit Button */}
+          <div className="flex items-center justify-between mt-1">
+            <p
+              className={`text-xs ${
+                isSelected ? "text-indigo-600" : "text-slate-500"
+              }`}
+            >
+              {formattedDate} at {formattedTime}
+            </p>
+            <button
+              type="button"
+              onClick={handleEditClick}
+              className={`p-1 rounded transition-colors ${
+                isSelected
+                  ? "text-indigo-600 hover:text-indigo-800 hover:bg-indigo-200"
+                  : "text-slate-400 hover:text-slate-600 hover:bg-slate-200"
+              }`}
+              aria-label={`Edit prompt: ${truncatedPrompt}`}
+              title="Edit and resubmit"
+            >
+              <svg
+                className="w-3.5 h-3.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </button>
