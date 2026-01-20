@@ -35,6 +35,7 @@ export function HistoryItem({ exchange, isSelected, onSelect, onEdit }: HistoryI
       onClick={() => onSelect(exchange.id)}
       className={`
         w-full text-left p-3 rounded-lg transition-colors duration-150
+        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
         ${
           isSelected
             ? "bg-indigo-100 border border-indigo-300"
@@ -78,7 +79,7 @@ export function HistoryItem({ exchange, isSelected, onSelect, onEdit }: HistoryI
             <button
               type="button"
               onClick={handleEditClick}
-              className={`p-1 rounded transition-colors ${
+              className={`p-1 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 ${
                 isSelected
                   ? "text-indigo-600 hover:text-indigo-800 hover:bg-indigo-200"
                   : "text-slate-400 hover:text-slate-600 hover:bg-slate-200"

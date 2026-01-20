@@ -109,7 +109,10 @@ function exportAsText(exchanges: HistoryExchange[]): void {
 
 export function ExportButton({ exchanges }: ExportButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -125,28 +128,52 @@ export function ExportButton({ exchanges }: ExportButtonProps) {
     }
   }, [isOpen]);
 
-  // Close dropdown on escape key
+  // Close dropdown on escape key and handle arrow key navigation
   useEffect(() => {
-    function handleEscape(event: KeyboardEvent) {
+    function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setIsOpen(false);
+        buttonRef.current?.focus();
+      } else if (event.key === "ArrowDown") {
+        event.preventDefault();
+        setFocusedIndex((prev) => (prev + 1) % 2);
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        setFocusedIndex((prev) => (prev - 1 + 2) % 2);
       }
     }
 
     if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
-      return () => document.removeEventListener("keydown", handleEscape);
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
     }
   }, [isOpen]);
+
+  // Focus the menu item when focusedIndex changes
+  useEffect(() => {
+    if (isOpen && menuItemRefs.current[focusedIndex]) {
+      menuItemRefs.current[focusedIndex]?.focus();
+    }
+  }, [isOpen, focusedIndex]);
+
+  // Toggle handler that resets focus index when opening
+  const handleToggle = () => {
+    if (!isOpen) {
+      setFocusedIndex(0);
+    }
+    setIsOpen(!isOpen);
+  };
 
   const handleExportJson = () => {
     exportAsJson(exchanges);
     setIsOpen(false);
+    buttonRef.current?.focus();
   };
 
   const handleExportText = () => {
     exportAsText(exchanges);
     setIsOpen(false);
+    buttonRef.current?.focus();
   };
 
   const isDisabled = exchanges.length === 0;
@@ -154,8 +181,9 @@ export function ExportButton({ exchanges }: ExportButtonProps) {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
+        ref={buttonRef}
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
         disabled={isDisabled}
         className={`
           flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md
@@ -166,7 +194,7 @@ export function ExportButton({ exchanges }: ExportButtonProps) {
               : "bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           }
         `}
-        aria-haspopup="true"
+        aria-haspopup="menu"
         aria-expanded={isOpen}
         aria-label="Export conversation history"
       >
@@ -204,12 +232,15 @@ export function ExportButton({ exchanges }: ExportButtonProps) {
           className="absolute right-0 mt-1 w-48 bg-white border border-slate-200 rounded-md shadow-lg z-50"
           role="menu"
           aria-orientation="vertical"
+          aria-label="Export format options"
         >
           <button
+            ref={(el) => { menuItemRefs.current[0] = el; }}
             type="button"
             onClick={handleExportJson}
-            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 focus:bg-slate-100 focus:outline-none"
+            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 focus:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
             role="menuitem"
+            tabIndex={focusedIndex === 0 ? 0 : -1}
           >
             {/* JSON icon */}
             <svg
@@ -229,10 +260,12 @@ export function ExportButton({ exchanges }: ExportButtonProps) {
             Export as JSON
           </button>
           <button
+            ref={(el) => { menuItemRefs.current[1] = el; }}
             type="button"
             onClick={handleExportText}
-            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 focus:bg-slate-100 focus:outline-none"
+            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 focus:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
             role="menuitem"
+            tabIndex={focusedIndex === 1 ? 0 : -1}
           >
             {/* Text icon */}
             <svg
