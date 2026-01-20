@@ -362,3 +362,30 @@
   - Category-based color coding makes UI scannable
 ---
 
+## 2026-01-20 - US-017
+- **What was implemented:** Keyboard navigation and accessibility
+  - Added skip link in MainLayout for keyboard users to skip to main content
+  - Added Escape key handling to close mobile sidebar
+  - Added close button visible on mobile sidebar for easy closing
+  - Added focus management when sidebar opens (focuses close button)
+  - Added global focus-visible styles in index.css with proper outline
+  - Added prefers-reduced-motion media query for reduced motion accessibility
+  - Improved ExportButton dropdown with arrow key navigation
+  - Added focus-ring styles to HistoryItem buttons
+  - Added ARIA labels and proper tabIndex attributes throughout
+  - All interactive elements are now keyboard focusable
+- **Files changed:**
+  - src/components/MainLayout.tsx - added skip link, Escape key handling
+  - src/components/Sidebar.tsx - added close button, focus management
+  - src/components/ExportButton.tsx - added arrow key navigation for dropdown
+  - src/components/HistoryItem.tsx - improved focus ring styles
+  - src/index.css - added global focus-visible and reduced-motion styles
+  - prd.json - marked US-017 as passed
+- **Learnings for future iterations:**
+  - Use focus-visible pseudo-class for keyboard-only focus indicators
+  - Reset state in click handlers instead of useEffect to avoid ESLint react-hooks/set-state-in-effect errors
+  - Use refs to manage focus between menu items in dropdowns
+  - Add prefers-reduced-motion for accessibility compliance
+  - Skip links should be sr-only with focus:not-sr-only for visibility when focused
+---
+
