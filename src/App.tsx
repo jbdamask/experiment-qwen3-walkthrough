@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { MainLayout } from "./components/MainLayout";
 import { WelcomeSection } from "./components/WelcomeSection";
 import { CapabilitiesSection } from "./components/CapabilitiesSection";
@@ -7,6 +7,9 @@ import { TextPromptInput } from "./components/TextPromptInput";
 import { ImageInput } from "./components/ImageInput";
 import { InputPreviewPanel } from "./components/InputPreviewPanel";
 import { ResponseDisplay } from "./components/ResponseDisplay";
+import { LoadingSpinner } from "./components/LoadingSpinner";
+import { ErrorMessage, ValidationError } from "./components/ErrorMessage";
+import { generateCompletion } from "./utils/api";
 
 function App() {
   const [prompt, setPrompt] = useState("");
@@ -17,6 +20,11 @@ function App() {
   const [response, setResponse] = useState<string | null>(null);
   const [lastSubmittedPrompt, setLastSubmittedPrompt] = useState<string | null>(null);
   const [lastSubmittedImageUrl, setLastSubmittedImageUrl] = useState<string | null>(null);
+
+  // Loading and error states
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   // Create a preview URL for the submitted image file
   const responseImageUrl = useMemo(() => {
@@ -31,15 +39,39 @@ function App() {
     setPrompt(newPrompt);
   };
 
-  const handlePromptSubmit = (submittedPrompt: string) => {
-    console.log("Submitted prompt:", submittedPrompt);
+  // Validate inputs before submission
+  const validateInputs = useCallback((): string[] => {
+    const errors: string[] = [];
+
+    if (!prompt.trim()) {
+      errors.push("Please enter a text prompt");
+    }
+
+    if (prompt.length > 4000) {
+      errors.push("Prompt exceeds maximum length of 4000 characters");
+    }
+
+    return errors;
+  }, [prompt]);
+
+  const handlePromptSubmit = useCallback(async (submittedPrompt: string) => {
+    // Validate inputs first
+    const errors = validateInputs();
+    if (errors.length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+
+    // Clear previous errors and start loading
+    setValidationErrors([]);
+    setError(null);
+    setIsLoading(true);
 
     // Store the submitted prompt and image for the response display
     setLastSubmittedPrompt(submittedPrompt);
 
     // Store image URL for response display context
     if (imageFile) {
-      // Create an object URL for the file to display in response
       setLastSubmittedImageUrl(URL.createObjectURL(imageFile));
     } else if (imageUrl) {
       setLastSubmittedImageUrl(imageUrl);
@@ -47,18 +79,36 @@ function App() {
       setLastSubmittedImageUrl(null);
     }
 
-    // For now, show a placeholder response
-    // This will be replaced with actual API call in a future story (US-010)
-    setResponse(
-      `This is a **demo response** from the Qwen3-VL model.\n\n` +
-      `You asked: "${submittedPrompt.substring(0, 100)}${submittedPrompt.length > 100 ? '...' : ''}"\n\n` +
-      `### Key Observations\n\n` +
-      `1. The model processed your input\n` +
-      `2. Image analysis was performed\n` +
-      `3. Context was understood\n\n` +
-      `> This is placeholder text. The actual API integration will be implemented in a later story.`
-    );
-  };
+    try {
+      // Prepare image data for API call
+      let imageData: { type: "file"; file: File } | { type: "url"; url: string } | undefined;
+      if (imageFile) {
+        imageData = { type: "file", file: imageFile };
+      } else if (imageUrl) {
+        imageData = { type: "url", url: imageUrl };
+      }
+
+      // Call the API
+      const result = await generateCompletion(submittedPrompt, imageData);
+      setResponse(result.content);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
+      setError(errorMessage);
+      setResponse(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [imageFile, imageUrl, validateInputs]);
+
+  const handleRetry = useCallback(() => {
+    if (lastSubmittedPrompt) {
+      handlePromptSubmit(lastSubmittedPrompt);
+    }
+  }, [lastSubmittedPrompt, handlePromptSubmit]);
+
+  const handleDismissError = useCallback(() => {
+    setError(null);
+  }, []);
 
   const handleImageChange = (data: { file: File | null; url: string | null }) => {
     setImageFile(data.file);
@@ -90,7 +140,29 @@ function App() {
           imageFile={imageFile}
           imageUrl={imageUrl}
         />
-        {response && (
+
+        {/* Validation errors */}
+        {validationErrors.length > 0 && (
+          <ValidationError errors={validationErrors} />
+        )}
+
+        {/* Loading state */}
+        {isLoading && (
+          <LoadingSpinner message="Qwen3-VL is analyzing your input..." />
+        )}
+
+        {/* Error state */}
+        {error && !isLoading && (
+          <ErrorMessage
+            title="API Error"
+            message={error}
+            onRetry={handleRetry}
+            onDismiss={handleDismissError}
+          />
+        )}
+
+        {/* Response display */}
+        {response && !isLoading && (
           <ResponseDisplay
             response={response}
             promptPreview={lastSubmittedPrompt ?? undefined}
