@@ -3,5 +3,37 @@
 # Branch: ralph/qwen3-vl-showcase
 # Started: 2026-01-19
 
+## Codebase Patterns
+- Use Tailwind CSS v4 with `@import "tailwindcss";` in CSS files (not @tailwind directives)
+- Tailwind is configured via `@tailwindcss/vite` plugin, no tailwind.config.js needed
+- Run `npm run typecheck` to verify TypeScript types
+- Run `npm run lint` to run ESLint
+- Run `npm run build` to build for production
+
+---
+
+## 2026-01-20 - US-001
+- **What was implemented:** Project scaffolding with React + TypeScript
+  - Created Vite React + TypeScript project
+  - Installed and configured Tailwind CSS v4 with Vite plugin
+  - Set up folder structure (src/components, src/pages, src/utils)
+  - Added ESLint configuration with React hooks and TypeScript support
+  - Added Prettier configuration for code formatting
+- **Files changed:**
+  - package.json, package-lock.json - project dependencies
+  - vite.config.ts - Vite configuration with Tailwind plugin
+  - tsconfig.json, tsconfig.app.json, tsconfig.node.json - TypeScript config
+  - eslint.config.js - ESLint configuration
+  - .prettierrc - Prettier configuration
+  - .gitignore - Git ignore patterns
+  - index.html - HTML entry point
+  - src/index.css - Tailwind CSS import
+  - src/main.tsx - React entry point
+  - src/App.tsx - Main app component
+  - src/components/.gitkeep, src/pages/.gitkeep, src/utils/.gitkeep - folder structure
+- **Learnings for future iterations:**
+  - Tailwind CSS v4 uses `@import "tailwindcss";` instead of `@tailwind` directives
+  - Use `@tailwindcss/vite` plugin for Vite integration (no separate tailwind.config.js needed)
+  - Vite creates project with eslint.config.js flat config format
 ---
 
