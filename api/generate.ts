@@ -1,11 +1,18 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
+interface ConversationTurn {
+  role: 'user' | 'assistant';
+  content: string;
+  imageUrl?: string | null;
+}
+
 interface GenerateRequestBody {
   prompt: string;
   image?: {
     type: 'file' | 'url';
     data: string; // base64 for file, URL string for url type
   };
+  conversationHistory?: ConversationTurn[];
 }
 
 interface QwenMessage {
@@ -64,7 +71,35 @@ function validateRequest(body: unknown): body is GenerateRequestBody {
 
 // Build the messages array for Qwen API
 function buildMessages(body: GenerateRequestBody): QwenMessage[] {
-  const content: QwenMessage['content'] = [];
+  const messages: QwenMessage[] = [];
+
+  // Add conversation history if provided (for multi-turn context)
+  if (body.conversationHistory && body.conversationHistory.length > 0) {
+    for (const turn of body.conversationHistory) {
+      const turnContent: QwenMessage['content'] = [];
+
+      // Add image if it was part of the user's message
+      if (turn.role === 'user' && turn.imageUrl) {
+        turnContent.push({
+          type: 'image_url',
+          image_url: { url: turn.imageUrl },
+        });
+      }
+
+      turnContent.push({
+        type: 'text',
+        text: turn.content,
+      });
+
+      messages.push({
+        role: turn.role,
+        content: turnContent,
+      });
+    }
+  }
+
+  // Add the current message
+  const currentContent: QwenMessage['content'] = [];
 
   // Add image if provided
   if (body.image) {
@@ -77,24 +112,24 @@ function buildMessages(body: GenerateRequestBody): QwenMessage[] {
         ? body.image.data
         : `data:image/jpeg;base64,${body.image.data}`;
     }
-    content.push({
+    currentContent.push({
       type: 'image_url',
       image_url: { url: imageUrl },
     });
   }
 
   // Add text prompt
-  content.push({
+  currentContent.push({
     type: 'text',
     text: body.prompt,
   });
 
-  return [
-    {
-      role: 'user',
-      content,
-    },
-  ];
+  messages.push({
+    role: 'user',
+    content: currentContent,
+  });
+
+  return messages;
 }
 
 export default async function handler(

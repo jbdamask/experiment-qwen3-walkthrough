@@ -4,7 +4,8 @@ import type { HistoryExchange } from "../types/session";
 export interface SessionContextValue {
   exchanges: HistoryExchange[];
   selectedExchangeId: string | null;
-  addExchange: (exchange: Omit<HistoryExchange, "id" | "timestamp">) => void;
+  addExchange: (exchange: Omit<HistoryExchange, "id" | "timestamp" | "conversationHistory">) => void;
+  addFollowUpToExchange: (exchangeId: string, userPrompt: string, assistantResponse: string) => void;
   selectExchange: (id: string | null) => void;
   getExchangeById: (id: string) => HistoryExchange | undefined;
 }

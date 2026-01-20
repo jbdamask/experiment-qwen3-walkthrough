@@ -9,6 +9,8 @@ import { InputPreviewPanel } from "./components/InputPreviewPanel";
 import { ResponseDisplay } from "./components/ResponseDisplay";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { ErrorMessage, ValidationError } from "./components/ErrorMessage";
+import { ConversationThread } from "./components/ConversationThread";
+import { FollowUpInput } from "./components/FollowUpInput";
 import { generateCompletion } from "./utils/api";
 import { useSession } from "./hooks/useSession";
 
@@ -28,7 +30,7 @@ function App() {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   // Session context for history management
-  const { addExchange, selectedExchangeId, getExchangeById, selectExchange } = useSession();
+  const { addExchange, addFollowUpToExchange, selectedExchangeId, getExchangeById, selectExchange } = useSession();
 
   // Get the selected exchange from history
   const selectedExchange = selectedExchangeId ? getExchangeById(selectedExchangeId) : null;
@@ -139,6 +141,31 @@ function App() {
     setError(null);
   }, []);
 
+  // Handle follow-up prompts that continue the conversation
+  const handleFollowUpSubmit = useCallback(async (followUpPrompt: string) => {
+    if (!selectedExchange) return;
+
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      // Call the API with conversation history for context
+      const result = await generateCompletion(
+        followUpPrompt,
+        undefined, // No new image for follow-ups
+        selectedExchange.conversationHistory
+      );
+
+      // Add the follow-up to the existing exchange
+      addFollowUpToExchange(selectedExchange.id, followUpPrompt, result.content);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedExchange, addFollowUpToExchange]);
+
   const handleImageChange = (data: { file: File | null; url: string | null }) => {
     setImageFile(data.file);
     setImageUrl(data.url);
@@ -190,8 +217,49 @@ function App() {
           />
         )}
 
-        {/* Response display - show either current response or selected history item */}
-        {displayResponse && !isLoading && (
+        {/* Conversation display - show multi-turn thread for selected exchange */}
+        {selectedExchange && selectedExchange.conversationHistory.length > 0 && !isLoading && (
+          <section
+            className="rounded-xl shadow-md border border-gray-200 bg-white overflow-hidden"
+            aria-label="Conversation"
+          >
+            <div className="bg-gray-50 border-b border-gray-200 px-6 py-4">
+              <div className="flex items-center gap-2">
+                <svg
+                  className="w-5 h-5 text-indigo-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  />
+                </svg>
+                <span className="text-sm font-semibold text-gray-800">
+                  Conversation ({selectedExchange.conversationHistory.length / 2} exchange{selectedExchange.conversationHistory.length > 2 ? 's' : ''})
+                </span>
+              </div>
+            </div>
+            <div className="p-6">
+              <ConversationThread
+                turns={selectedExchange.conversationHistory}
+                initialImageUrl={selectedExchange.imageUrl}
+              />
+              <FollowUpInput
+                onSubmit={handleFollowUpSubmit}
+                disabled={isLoading}
+                placeholder="Ask a follow-up question about this conversation..."
+              />
+            </div>
+          </section>
+        )}
+
+        {/* Response display - show for current (non-selected) response only */}
+        {displayResponse && !isLoading && !selectedExchange && (
           <ResponseDisplay
             response={displayResponse}
             promptPreview={displayPrompt ?? undefined}

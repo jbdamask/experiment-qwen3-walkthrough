@@ -1,11 +1,18 @@
 // API types and utilities for calling the Qwen3-VL API proxy
 
+import type { ConversationTurn } from '../types/session';
+
 export interface GenerateRequest {
   prompt: string;
   image?: {
     type: 'file' | 'url';
     data: string; // base64 for file, URL string for url type
   };
+  conversationHistory?: Array<{
+    role: 'user' | 'assistant';
+    content: string;
+    imageUrl?: string | null;
+  }>;
 }
 
 export interface GenerateResponse {
@@ -51,7 +58,8 @@ export async function fileToBase64(file: File): Promise<string> {
 // Call the generate API endpoint
 export async function generateCompletion(
   prompt: string,
-  image?: { type: 'file'; file: File } | { type: 'url'; url: string }
+  image?: { type: 'file'; file: File } | { type: 'url'; url: string },
+  conversationHistory?: ConversationTurn[]
 ): Promise<GenerateResponse> {
   const body: GenerateRequest = { prompt };
 
@@ -62,6 +70,15 @@ export async function generateCompletion(
     } else {
       body.image = { type: 'url', data: image.url };
     }
+  }
+
+  // Include conversation history for context continuity
+  if (conversationHistory && conversationHistory.length > 0) {
+    body.conversationHistory = conversationHistory.map(turn => ({
+      role: turn.role,
+      content: turn.content,
+      imageUrl: turn.imageUrl,
+    }));
   }
 
   const response = await fetch('/api/generate', {
