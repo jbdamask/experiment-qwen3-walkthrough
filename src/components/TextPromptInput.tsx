@@ -2,16 +2,29 @@ import { useState } from "react";
 
 interface TextPromptInputProps {
   onSubmit?: (prompt: string) => void;
+  onChange?: (prompt: string) => void;
+  value?: string;
   disabled?: boolean;
   maxLength?: number;
 }
 
 export function TextPromptInput({
   onSubmit,
+  onChange,
+  value,
   disabled = false,
   maxLength = 4000,
 }: TextPromptInputProps) {
-  const [prompt, setPrompt] = useState("");
+  const [internalPrompt, setInternalPrompt] = useState("");
+
+  // Support both controlled and uncontrolled modes
+  const prompt = value !== undefined ? value : internalPrompt;
+  const setPrompt = (newValue: string) => {
+    if (value === undefined) {
+      setInternalPrompt(newValue);
+    }
+    onChange?.(newValue);
+  };
 
   const characterCount = prompt.length;
   const isOverLimit = characterCount > maxLength;

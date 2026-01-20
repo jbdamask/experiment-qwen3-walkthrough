@@ -1,17 +1,30 @@
+import { useState } from "react";
 import { MainLayout } from "./components/MainLayout";
 import { WelcomeSection } from "./components/WelcomeSection";
 import { CapabilitiesSection } from "./components/CapabilitiesSection";
 import { UseCasesSection } from "./components/UseCasesSection";
 import { TextPromptInput } from "./components/TextPromptInput";
 import { ImageInput } from "./components/ImageInput";
+import { InputPreviewPanel } from "./components/InputPreviewPanel";
 
 function App() {
-  const handlePromptSubmit = (prompt: string) => {
-    console.log("Submitted prompt:", prompt);
+  const [prompt, setPrompt] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  const handlePromptChange = (newPrompt: string) => {
+    setPrompt(newPrompt);
+  };
+
+  const handlePromptSubmit = (submittedPrompt: string) => {
+    console.log("Submitted prompt:", submittedPrompt);
     // TODO: Handle prompt submission in future stories
   };
 
   const handleImageChange = (data: { file: File | null; url: string | null }) => {
+    setImageFile(data.file);
+    setImageUrl(data.url);
+
     if (data.file) {
       console.log("Image file uploaded:", data.file.name);
     } else if (data.url) {
@@ -19,7 +32,6 @@ function App() {
     } else {
       console.log("Image cleared");
     }
-    // TODO: Handle image change in future stories
   };
 
   return (
@@ -29,7 +41,16 @@ function App() {
         <CapabilitiesSection />
         <UseCasesSection />
         <ImageInput onImageChange={handleImageChange} />
-        <TextPromptInput onSubmit={handlePromptSubmit} />
+        <TextPromptInput
+          onSubmit={handlePromptSubmit}
+          onChange={handlePromptChange}
+          value={prompt}
+        />
+        <InputPreviewPanel
+          prompt={prompt}
+          imageFile={imageFile}
+          imageUrl={imageUrl}
+        />
       </div>
     </MainLayout>
   );
