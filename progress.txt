@@ -1,0 +1,7 @@
+# Ralph Progress Log
+# Project: Qwen3-VL-Interactive-Showcase
+# Branch: ralph/qwen3-vl-showcase
+# Started: 2026-01-19
+
+---
+
