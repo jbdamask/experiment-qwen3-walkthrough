@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { MainLayout } from "./components/MainLayout";
 import { WelcomeSection } from "./components/WelcomeSection";
 import { CapabilitiesSection } from "./components/CapabilitiesSection";
@@ -10,6 +10,7 @@ import { ResponseDisplay } from "./components/ResponseDisplay";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { ErrorMessage, ValidationError } from "./components/ErrorMessage";
 import { generateCompletion } from "./utils/api";
+import { useSession } from "./hooks/useSession";
 
 function App() {
   const [prompt, setPrompt] = useState("");
@@ -26,14 +27,32 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
+  // Session context for history management
+  const { addExchange, selectedExchangeId, getExchangeById, selectExchange } = useSession();
+
+  // Get the selected exchange from history
+  const selectedExchange = selectedExchangeId ? getExchangeById(selectedExchangeId) : null;
+
+  // Display values - either from selected exchange or current state
+  const displayResponse = selectedExchange?.response ?? response;
+  const displayPrompt = selectedExchange?.prompt ?? lastSubmittedPrompt;
+  const displayImageUrl = selectedExchange?.imageUrl ?? lastSubmittedImageUrl;
+
+  // Clear selection when user starts typing a new prompt
+  useEffect(() => {
+    if (prompt.trim() && selectedExchangeId) {
+      selectExchange(null);
+    }
+  }, [prompt, selectedExchangeId, selectExchange]);
+
   // Create a preview URL for the submitted image file
   const responseImageUrl = useMemo(() => {
     // Use imageUrl if available, otherwise create object URL for file
-    if (lastSubmittedImageUrl) {
-      return lastSubmittedImageUrl;
+    if (displayImageUrl) {
+      return displayImageUrl;
     }
     return null;
-  }, [lastSubmittedImageUrl]);
+  }, [displayImageUrl]);
 
   const handlePromptChange = (newPrompt: string) => {
     setPrompt(newPrompt);
@@ -71,9 +90,12 @@ function App() {
     setLastSubmittedPrompt(submittedPrompt);
 
     // Store image URL for response display context
+    let currentImageUrl: string | null = null;
     if (imageFile) {
-      setLastSubmittedImageUrl(URL.createObjectURL(imageFile));
+      currentImageUrl = URL.createObjectURL(imageFile);
+      setLastSubmittedImageUrl(currentImageUrl);
     } else if (imageUrl) {
+      currentImageUrl = imageUrl;
       setLastSubmittedImageUrl(imageUrl);
     } else {
       setLastSubmittedImageUrl(null);
@@ -91,6 +113,13 @@ function App() {
       // Call the API
       const result = await generateCompletion(submittedPrompt, imageData);
       setResponse(result.content);
+
+      // Add to session history
+      addExchange({
+        prompt: submittedPrompt,
+        response: result.content,
+        imageUrl: currentImageUrl,
+      });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
       setError(errorMessage);
@@ -98,7 +127,7 @@ function App() {
     } finally {
       setIsLoading(false);
     }
-  }, [imageFile, imageUrl, validateInputs]);
+  }, [imageFile, imageUrl, validateInputs, addExchange]);
 
   const handleRetry = useCallback(() => {
     if (lastSubmittedPrompt) {
@@ -161,11 +190,11 @@ function App() {
           />
         )}
 
-        {/* Response display */}
-        {response && !isLoading && (
+        {/* Response display - show either current response or selected history item */}
+        {displayResponse && !isLoading && (
           <ResponseDisplay
-            response={response}
-            promptPreview={lastSubmittedPrompt ?? undefined}
+            response={displayResponse}
+            promptPreview={displayPrompt ?? undefined}
             imagePreviewUrl={responseImageUrl}
           />
         )}
