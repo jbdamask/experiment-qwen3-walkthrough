@@ -59,3 +59,20 @@
   - The dev-browser skill is not available in this environment; use `npm run build` to verify
 ---
 
+## 2026-01-20 - US-003
+- **What was implemented:** Welcome and overview section
+  - Created WelcomeSection component with gradient hero styling, model name, and description
+  - Created CapabilitiesSection component with 4 capabilities (visual reasoning, Q&A, instruction following, OCR)
+  - Created UseCasesSection component with 4 common use cases and example prompts
+  - Updated App.tsx to compose all sections together
+- **Files changed:**
+  - src/components/WelcomeSection.tsx - new hero component with gradient styling
+  - src/components/CapabilitiesSection.tsx - capabilities grid with icons and descriptions
+  - src/components/UseCasesSection.tsx - use cases list with example prompts
+  - src/App.tsx - updated to use new section components
+- **Learnings for future iterations:**
+  - Use consistent spacing with Tailwind's `space-y-6` for vertical sections
+  - Use `role="img"` and `aria-label` for emoji icons for accessibility
+  - Card hover states work well with `hover:border-*` and `hover:bg-*` combinations
+---
+
