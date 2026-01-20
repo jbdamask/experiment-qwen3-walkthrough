@@ -206,3 +206,24 @@
   - Use line-clamp-2 Tailwind class for text truncation
 ---
 
+## 2026-01-20 - US-010
+- **What was implemented:** Loading states and error handling UI
+  - Created LoadingSpinner component with animated spinner and elapsed time indicator
+  - Elapsed time updates every second with warning message after 30s
+  - Created ErrorMessage component for API errors with retry/dismiss buttons
+  - Created ValidationError component for displaying input validation issues
+  - Integrated actual API calls in App.tsx using generateCompletion from utils/api.ts
+  - Added validation logic (prompt required, max 4000 chars) before submission
+  - Proper state management for isLoading, error, and validationErrors
+- **Files changed:**
+  - src/components/LoadingSpinner.tsx - new component with spinner, elapsed time, accessibility
+  - src/components/ErrorMessage.tsx - ErrorMessage and ValidationError components
+  - src/App.tsx - integrated loading/error states, actual API calls, validation
+- **Learnings for future iterations:**
+  - Don't call impure functions (Date.now()) during render - use inside useEffect
+  - Don't call setState synchronously in useEffect body - use initial state value instead
+  - Use useCallback for handlers that depend on state to avoid stale closures
+  - role="status" and aria-live="polite" for loading indicators for screen readers
+  - role="alert" and aria-live="assertive" for error messages for screen readers
+---
+
