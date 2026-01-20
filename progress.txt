@@ -114,3 +114,25 @@
   - Use role="button" and tabIndex for keyboard accessibility on non-button elements
 ---
 
+## 2026-01-20 - US-006
+- **What was implemented:** Image input via URL
+  - Created unified ImageInput component that replaces ImageUpload
+  - Tab-style toggle to switch between "Upload File" and "From URL" modes
+  - URL text input with http/https format validation using regex
+  - Image preview for URL mode with onLoad/onError handling
+  - Green checkmark indicator when URL image loads successfully
+  - Error messages for invalid URLs or failed image loads
+  - Clear button in URL mode to reset input
+  - Preserved all file upload functionality from previous ImageUpload component
+  - Updated App.tsx to handle both file and URL image data
+- **Files changed:**
+  - src/components/ImageInput.tsx - new unified component with file/URL toggle
+  - src/components/ImageUpload.tsx - deleted (replaced by ImageInput)
+  - src/App.tsx - updated to use ImageInput with new callback signature
+- **Learnings for future iterations:**
+  - Use role="tablist" and role="tab" with aria-selected for toggle UIs
+  - Image onLoad/onError events are useful for validating URL images
+  - Clear state when switching modes to avoid stale data
+  - Combined components are cleaner than separate related components
+---
+
