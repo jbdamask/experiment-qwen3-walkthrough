@@ -94,3 +94,23 @@
   - Consider keyboard shortcuts (Ctrl+Enter) for form submission in text-heavy inputs
 ---
 
+## 2026-01-20 - US-005
+- **What was implemented:** Image upload via file picker
+  - Created ImageUpload component with file input accepting JPG, PNG, GIF, WebP
+  - Drag and drop zone with visual feedback when dragging
+  - Preview thumbnail displaying uploaded image with max-height constraint
+  - Clear/remove button with both an X button on the thumbnail and a text button below
+  - File size validation (10MB max) with error messages
+  - File type validation with user-friendly error messages
+  - Keyboard accessibility with Enter/Space support on the drop zone
+  - Integrated component into App.tsx with handleImageChange callback
+- **Files changed:**
+  - src/components/ImageUpload.tsx - new component with file picker, drag-and-drop, preview, validation
+  - src/App.tsx - added ImageUpload with onImageChange handler
+- **Learnings for future iterations:**
+  - Use `URL.createObjectURL()` for creating preview URLs and `URL.revokeObjectURL()` for cleanup
+  - Drag and drop requires handling dragEnter, dragLeave, dragOver, and drop events
+  - Reset file input by setting `.value = ""` when clearing
+  - Use role="button" and tabIndex for keyboard accessibility on non-button elements
+---
+
