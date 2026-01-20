@@ -281,3 +281,24 @@
   - Auto-resize textarea using scrollHeight in useEffect based on value changes
 ---
 
+## 2026-01-20 - US-013
+- **What was implemented:** Editable prompt history
+  - Added edit button (pencil icon) to HistoryItem component
+  - Edit handler passed through Sidebar to MainLayout to App.tsx
+  - Clicking edit populates prompt input with previous prompt text
+  - If exchange had a URL image (not blob), restores it in ImageInput
+  - Resubmitting creates a new exchange (existing addExchange flow)
+  - ImageInput now supports initialUrl prop with key-based remount for resetting state
+- **Files changed:**
+  - src/components/HistoryItem.tsx - added onEdit prop and edit button with pencil icon
+  - src/components/Sidebar.tsx - added onEditExchange prop and handler
+  - src/components/MainLayout.tsx - added onEditExchange prop, passed to Sidebar
+  - src/components/ImageInput.tsx - added initialUrl prop for controlled initial state
+  - src/App.tsx - added handleEditExchange, imageInputKey, imageInputInitialUrl for edit flow
+- **Learnings for future iterations:**
+  - Use key prop to force component remount when you need to reset internal state
+  - ESLint react-hooks/set-state-in-effect forbids setState in effects; use initial state values instead
+  - ESLint react-hooks/refs forbids accessing refs during render; avoid refs for state tracking
+  - Blob URLs are temporary and won't survive component remounts; only restore URL-based images
+---
+

@@ -204,8 +204,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 13,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added pencil icon edit button on HistoryItem, clicking populates prompt input (and URL image if applicable), resubmitting creates a new exchange via existing addExchange flow"
     },
     {
       "id": "US-014",
