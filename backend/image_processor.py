@@ -3,6 +3,8 @@
 import base64
 import re
 
+import httpx
+
 SUPPORTED_MIME_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
 
 
@@ -40,3 +42,30 @@ def decode_base64_image(data_url: str) -> bytes:
         return base64.b64decode(base64_data)
     except Exception as e:
         raise ValueError(f"Failed to decode base64 data: {e}") from e
+
+
+async def fetch_image_from_url(url: str) -> bytes:
+    """Fetch an image from a URL and return raw bytes.
+
+    Args:
+        url: The URL to fetch the image from
+
+    Returns:
+        Raw image bytes
+
+    Raises:
+        Exception: If the fetch fails (404, timeout, network error, etc.)
+    """
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        try:
+            response = await client.get(url)
+            response.raise_for_status()
+            return response.content
+        except httpx.TimeoutException as e:
+            raise Exception(f"Timeout fetching image from URL: {url}") from e
+        except httpx.HTTPStatusError as e:
+            raise Exception(
+                f"HTTP error {e.response.status_code} fetching image from URL: {url}"
+            ) from e
+        except httpx.RequestError as e:
+            raise Exception(f"Failed to fetch image from URL: {url} - {e}") from e
