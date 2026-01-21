@@ -20,12 +20,20 @@ class ImageData(BaseModel):
     data: str  # base64 data URL or URL string
 
 
+class ConversationHistoryItem(BaseModel):
+    """A single item in the conversation history."""
+
+    role: str  # "user" or "assistant"
+    content: str
+    imageUrl: Optional[str] = None  # Optional image URL for this message
+
+
 class GenerateRequest(BaseModel):
     """Request model for /api/generate endpoint."""
 
     prompt: str
     image: Optional[ImageData] = None
-    conversationHistory: Optional[list] = None
+    conversationHistory: Optional[list[ConversationHistoryItem]] = None
 
 
 class UsageInfo(BaseModel):
@@ -54,19 +62,35 @@ async def generate(request: GenerateRequest) -> GenerateResponse:
     Returns:
         Generated response with content and usage info
     """
-    # Process image if provided
-    image_bytes: bytes | None = None
+    messages: list[dict[str, str]] = []
+    all_images: list[bytes] = []
+
+    # Process conversation history if provided
+    if request.conversationHistory:
+        for item in request.conversationHistory:
+            messages.append({"role": item.role, "content": item.content})
+
+            # Fetch image if imageUrl is present
+            if item.imageUrl:
+                history_image_bytes = await fetch_image_from_url(item.imageUrl)
+                all_images.append(history_image_bytes)
+
+    # Process current image if provided
+    current_image_bytes: bytes | None = None
     if request.image:
         if request.image.type == "base64":
-            image_bytes = decode_base64_image(request.image.data)
+            current_image_bytes = decode_base64_image(request.image.data)
         elif request.image.type == "url":
-            image_bytes = await fetch_image_from_url(request.image.data)
+            current_image_bytes = await fetch_image_from_url(request.image.data)
 
-    # Build messages list
-    messages = [{"role": "user", "content": request.prompt}]
+    if current_image_bytes:
+        all_images.append(current_image_bytes)
 
-    # Prepare images list for ollama_client
-    images = [image_bytes] if image_bytes else None
+    # Add current prompt as final user message
+    messages.append({"role": "user", "content": request.prompt})
+
+    # Prepare images list for ollama_client (None if empty)
+    images = all_images if all_images else None
 
     # Call Ollama
     result = await generate_completion(messages, images)
