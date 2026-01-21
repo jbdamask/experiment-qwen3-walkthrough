@@ -82,3 +82,16 @@ Backend files go in backend/ subdirectory alongside the existing React frontend.
   - The ollama_client attaches all images to the last user message in the messages list
 ---
 
+## 2026-01-21 - US-007
+- What was implemented: Error handling with structured JSON responses
+- Files changed:
+  - backend/main.py (added exception classes and handlers)
+- **Learnings for future iterations:**
+  - Use FastAPI's `@app.exception_handler()` decorator to register custom exception handlers
+  - Return JSONResponse with `status_code` and `content` dict for structured errors
+  - Custom exception class (ImageFetchError) allows distinguishing image fetch failures from other errors
+  - httpx.ConnectError can be caught directly to detect Ollama service unavailability
+  - ValueError handler catches invalid prompt/image format errors with BAD_REQUEST code
+  - General Exception handler catches all other errors with INTERNAL_ERROR code
+---
+
