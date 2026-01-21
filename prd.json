@@ -1,277 +1,154 @@
 {
-  "project": "Qwen3-VL-Interactive-Showcase",
-  "branchName": "ralph/qwen3-vl-showcase",
-  "description": "Interactive web application demonstrating Qwen3-VL-8B-Instruct capabilities for vision-language instruction following",
+  "project": "Qwen3-VL Backend",
+  "branchName": "ralph/qwen3-vl-ollama-backend",
+  "description": "Local backend server using Ollama to serve vision-language model, replacing the cloud API with local inference",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Project scaffolding with React + TypeScript",
-      "description": "As a developer, I need a React + TypeScript project foundation to build upon.",
+      "title": "Create backend directory with Python dependencies",
+      "description": "As a developer, I need the backend project structure so I can build the local Ollama server.",
       "acceptanceCriteria": [
-        "Create Vite React + TypeScript project",
-        "Install and configure Tailwind CSS",
-        "Set up basic folder structure (src/components, src/pages, src/utils)",
-        "Add ESLint and Prettier configuration",
+        "Create backend/ directory in project root",
+        "Create backend/requirements.txt with: fastapi, uvicorn[standard], httpx",
+        "Create empty backend/main.py file",
+        "Create empty backend/ollama_client.py file",
+        "Create empty backend/image_processor.py file",
         "Typecheck passes"
       ],
       "priority": 1,
-      "passes": true,
-      "notes": "Completed with Vite, Tailwind CSS v4, ESLint, and Prettier"
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-002",
-      "title": "App layout shell with header and main content area",
-      "description": "As a user, I want a clean app layout with navigation and content areas.",
+      "title": "Implement image processor for base64 decoding",
+      "description": "As a backend service, I need to decode base64 image data URLs so I can pass image bytes to Ollama.",
       "acceptanceCriteria": [
-        "Header component with app title 'Qwen3-VL Showcase'",
-        "Main content area with max-width container",
-        "Responsive layout that works on mobile and desktop",
-        "Sidebar placeholder for future session history",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
+        "In backend/image_processor.py: function decode_base64_image(data_url: str) -> bytes",
+        "Extracts image bytes from data URL format: data:image/png;base64,XXX",
+        "Supports image/jpeg, image/png, image/gif, image/webp mime types",
+        "Raises ValueError for invalid data URL format",
+        "Typecheck passes"
       ],
       "priority": 2,
-      "passes": true,
-      "notes": "Created Header, Sidebar, and MainLayout components with responsive design using Tailwind CSS"
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-003",
-      "title": "Welcome and overview section",
-      "description": "As a user, I want to understand what Qwen3-VL can do when I first visit the app.",
+      "title": "Implement image processor for URL fetching",
+      "description": "As a backend service, I need to fetch images from URLs so I can pass them to Ollama.",
       "acceptanceCriteria": [
-        "Welcome section with model name and brief description",
-        "List of supported capabilities (visual reasoning, Q&A, instruction following)",
-        "Common use cases section with 3-4 examples",
-        "Visually styled with cards or sections",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
+        "In backend/image_processor.py: async function fetch_image_from_url(url: str) -> bytes",
+        "Uses httpx.AsyncClient with 10 second timeout",
+        "Raises Exception with descriptive message for fetch failures (404, timeout, etc.)",
+        "Returns raw image bytes on success",
+        "Typecheck passes"
       ],
       "priority": 3,
-      "passes": true,
-      "notes": "Created WelcomeSection, CapabilitiesSection, and UseCasesSection components with styled cards"
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-004",
-      "title": "Text prompt input component",
-      "description": "As a user, I want to enter text prompts to send to the model.",
+      "title": "Create Ollama client for vision chat completions",
+      "description": "As a backend service, I need to communicate with Ollama API to get model responses with image understanding.",
       "acceptanceCriteria": [
-        "Textarea input for text prompts with placeholder text",
-        "Submit button to send the prompt",
-        "Character count display",
-        "Input state management with React state",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
+        "In backend/ollama_client.py: async function generate_completion(messages: list, images: list[bytes] | None) -> dict",
+        "Calls Ollama API at http://localhost:11434/api/chat",
+        "Uses model name 'llava' (or 'llava:13b' for better quality)",
+        "Formats messages with images as base64 in Ollama's expected format",
+        "Returns dict with 'content' (response text), 'prompt_eval_count', 'eval_count'",
+        "Raises httpx.ConnectError if Ollama is not running",
+        "Typecheck passes"
       ],
       "priority": 4,
-      "passes": true,
-      "notes": "Created TextPromptInput component with textarea, submit button, character count, Ctrl+Enter shortcut, and validation"
+      "passes": false,
+      "notes": "Using llava as it's a widely available vision model in Ollama"
     },
     {
       "id": "US-005",
-      "title": "Image upload via file picker",
-      "description": "As a user, I want to upload an image file to send with my prompt.",
+      "title": "Implement /api/generate endpoint with Pydantic models",
+      "description": "As a frontend application, I need the POST /api/generate endpoint to accept requests and return responses.",
       "acceptanceCriteria": [
-        "File input that accepts image formats (jpg, png, gif, webp)",
-        "Drag and drop zone for images",
-        "Preview thumbnail of uploaded image",
-        "Clear/remove uploaded image button",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
+        "In backend/main.py: FastAPI app with POST /api/generate endpoint",
+        "Request model: prompt (str required), image (optional: type str, data str), conversationHistory (optional list)",
+        "Response model: id (str), content (str), usage (prompt_tokens int, completion_tokens int, total_tokens int)",
+        "Endpoint calls image_processor functions based on image.type",
+        "Endpoint calls ollama_client.generate_completion with processed data",
+        "Generates UUID for response id",
+        "Maps Ollama's prompt_eval_count/eval_count to usage fields",
+        "Typecheck passes"
       ],
       "priority": 5,
-      "passes": true,
-      "notes": "Created ImageUpload component with file picker, drag-and-drop, preview thumbnail, and clear button"
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-006",
-      "title": "Image input via URL",
-      "description": "As a user, I want to provide an image URL instead of uploading a file.",
+      "title": "Add conversation history support to endpoint",
+      "description": "As a user having a multi-turn conversation, I need previous messages included for context.",
       "acceptanceCriteria": [
-        "Text input field for image URL",
-        "Toggle between file upload and URL input modes",
-        "URL validation (basic format check)",
-        "Preview of URL image when valid URL entered",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
+        "Endpoint formats conversationHistory into Ollama message format",
+        "Each history item becomes a message with role and content",
+        "History images (imageUrl field) are fetched and included",
+        "Current prompt with image is appended as final user message",
+        "Empty conversationHistory works (first message in conversation)",
+        "Typecheck passes"
       ],
       "priority": 6,
-      "passes": true,
-      "notes": "Created unified ImageInput component with tab-style toggle between file upload and URL input modes, URL validation with regex, and image preview with load success/error feedback"
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-007",
-      "title": "Combined input preview panel",
-      "description": "As a user, I want to see a preview of my complete input before submitting.",
+      "title": "Add error handling with structured response format",
+      "description": "As a frontend application, I need structured error responses to display meaningful messages.",
       "acceptanceCriteria": [
-        "Preview panel showing text prompt and image together",
-        "Validation messages for missing or invalid inputs",
-        "Visual indication when input is ready to submit",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
+        "Custom exception handler returns JSON: {error: {message: str, code: str}}",
+        "Missing/invalid prompt returns 400 with code 'BAD_REQUEST'",
+        "Ollama connection failure (httpx.ConnectError) returns 503 with code 'SERVICE_UNAVAILABLE' and message mentioning Ollama",
+        "Image fetch failure returns 400 with code 'IMAGE_FETCH_FAILED'",
+        "Other errors return 500 with code 'INTERNAL_ERROR'",
+        "Typecheck passes"
       ],
       "priority": 7,
-      "passes": true,
-      "notes": "Created InputPreviewPanel component with 2-column preview of image and text prompt, validation messages, and ready-to-submit badge. Updated TextPromptInput to support controlled mode for state lifting."
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-008",
-      "title": "API proxy serverless function",
-      "description": "As a developer, I need a backend proxy to securely call the Qwen3-VL API.",
+      "title": "Add Vite proxy configuration for /api routes",
+      "description": "As a developer, I need the frontend dev server to proxy /api requests to the backend.",
       "acceptanceCriteria": [
-        "Create serverless function in api/ folder (Vercel or similar)",
-        "Accept POST requests with text and image data",
-        "Forward requests to Qwen3-VL API endpoint",
-        "Return model response to frontend",
-        "Handle API errors gracefully",
+        "Modify vite.config.ts to add server.proxy configuration",
+        "Proxy /api/* requests to http://localhost:8000",
+        "changeOrigin set to true",
+        "Frontend fetch('/api/generate') reaches backend without CORS issues",
         "Typecheck passes"
       ],
       "priority": 8,
-      "passes": true,
-      "notes": "Created Vercel serverless function at api/generate.ts with POST endpoint accepting text/image data, Qwen API integration, comprehensive error handling, and frontend utility in src/utils/api.ts"
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-009",
-      "title": "Response display component",
-      "description": "As a user, I want to see the model's response clearly formatted.",
+      "title": "Create backend README with setup instructions",
+      "description": "As a developer, I need documentation to set up and run the local backend.",
       "acceptanceCriteria": [
-        "Response container with distinct visual styling",
-        "Support for markdown rendering in responses",
-        "Copy response to clipboard button",
-        "Clear visual linkage between prompt and response",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
+        "Create backend/README.md",
+        "Document Ollama installation: brew install ollama",
+        "Document pulling vision model: ollama pull llava",
+        "Document starting Ollama: ollama serve (runs on port 11434)",
+        "Document Python setup: cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt",
+        "Document running backend: uvicorn main:app --reload --port 8000",
+        "Document running frontend: npm run dev (in project root)",
+        "Note that both backend and frontend must be running for the app to work",
+        "Typecheck passes"
       ],
       "priority": 9,
-      "passes": true,
-      "notes": "Created ResponseDisplay component with react-markdown for rendering, copy-to-clipboard button with visual feedback, prompt/image context header showing linkage between input and response"
-    },
-    {
-      "id": "US-010",
-      "title": "Loading states and error handling UI",
-      "description": "As a user, I want clear feedback when the model is processing or if something goes wrong.",
-      "acceptanceCriteria": [
-        "Loading spinner/skeleton while awaiting response",
-        "Estimated or elapsed time indicator during inference",
-        "Error message component for API failures",
-        "Validation error display for invalid inputs",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 10,
-      "passes": true,
-      "notes": "Created LoadingSpinner component with elapsed time, ErrorMessage component for API errors with retry/dismiss, ValidationError component for input validation, integrated with actual API calls in App.tsx"
-    },
-    {
-      "id": "US-011",
-      "title": "Session history sidebar",
-      "description": "As a user, I want to see my conversation history in a sidebar.",
-      "acceptanceCriteria": [
-        "Sidebar component showing list of past exchanges",
-        "Each history item shows truncated prompt preview",
-        "Click history item to view full exchange",
-        "Session state persisted in React context (not localStorage)",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 11,
-      "passes": true,
-      "notes": "Created SessionContext with SessionProvider for state management, HistoryItem component for displaying exchanges with truncated prompt preview and timestamps, updated Sidebar to show history list. Clicking an item displays the full exchange in the main content area."
-    },
-    {
-      "id": "US-012",
-      "title": "Context-aware follow-up prompts",
-      "description": "As a user, I want to ask follow-up questions that reference previous context.",
-      "acceptanceCriteria": [
-        "Follow-up input field after receiving response",
-        "Conversation context passed to API for continuity",
-        "Visual thread showing multi-turn conversation",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 12,
-      "passes": true,
-      "notes": "Created FollowUpInput component for asking follow-up questions, ConversationThread component for chat-style visual thread, updated API to pass conversationHistory for context continuity, added ConversationTurn type and addFollowUpToExchange to session context"
-    },
-    {
-      "id": "US-013",
-      "title": "Editable prompt history",
-      "description": "As a user, I want to edit and resubmit previous prompts.",
-      "acceptanceCriteria": [
-        "Edit button on history items",
-        "Clicking edit populates input with previous prompt",
-        "Resubmitting creates new exchange (does not modify history)",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 13,
-      "passes": true,
-      "notes": "Added pencil icon edit button on HistoryItem, clicking populates prompt input (and URL image if applicable), resubmitting creates a new exchange via existing addExchange flow"
-    },
-    {
-      "id": "US-014",
-      "title": "Code examples panel with Python and JavaScript",
-      "description": "As a developer, I want copy-ready code examples for integrating Qwen3-VL.",
-      "acceptanceCriteria": [
-        "Collapsible code examples panel",
-        "Python example using requests or transformers library",
-        "JavaScript/TypeScript example using fetch",
-        "Syntax highlighting for code blocks",
-        "Copy code button for each example",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 14,
-      "passes": true,
-      "notes": "Created CodeExamplesPanel component with collapsible panel, Python example using requests library, TypeScript example using fetch API, copy button for each example, and a note about API key security"
-    },
-    {
-      "id": "US-015",
-      "title": "Export conversation transcript",
-      "description": "As a user, I want to export my conversation history for later reference.",
-      "acceptanceCriteria": [
-        "Export button in session history panel",
-        "Export as JSON option with structured data",
-        "Export as plain text option",
-        "File downloads with timestamp in filename",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 15,
-      "passes": true,
-      "notes": "Created ExportButton component with dropdown menu for JSON and plain text export options. Export button placed in Sidebar header. Filenames include timestamp (qwen3-vl-conversation-YYYYMMDD-HHMMSS.ext)"
-    },
-    {
-      "id": "US-016",
-      "title": "Preset example prompts",
-      "description": "As a user, I want quick-start examples to try without typing my own prompt.",
-      "acceptanceCriteria": [
-        "Preset prompts section with 4-6 example tasks",
-        "Examples cover: object description, OCR, spatial reasoning, visual Q&A",
-        "Clicking preset populates input fields",
-        "Include sample images for presets",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 16,
-      "passes": true,
-      "notes": "Created PresetPrompts component with 6 example tasks covering object description, OCR, spatial reasoning, visual Q&A, chart analysis, and scene understanding. Each preset has a sample image from Unsplash and clicking populates both prompt and image inputs."
-    },
-    {
-      "id": "US-017",
-      "title": "Keyboard navigation and accessibility",
-      "description": "As a user, I want to navigate the app using keyboard only.",
-      "acceptanceCriteria": [
-        "All interactive elements are keyboard focusable",
-        "Tab order follows logical flow",
-        "Enter/Space activates buttons and controls",
-        "Alt text on images and icons",
-        "ARIA labels on interactive components",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 17,
-      "passes": true,
-      "notes": "Added skip link, Escape key sidebar close, focus-visible global styles, arrow key navigation for dropdown menus, ARIA labels for interactive elements, and prefers-reduced-motion support"
+      "passes": false,
+      "notes": ""
     }
   ]
 }
