@@ -25,3 +25,6 @@ dist-ssr
 
 # Project-specific
 .last-branch
+
+backend/.venv/
+backend/__pycache__/
