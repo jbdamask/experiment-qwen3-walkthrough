@@ -3,7 +3,9 @@
 import uuid
 from typing import Optional
 
-from fastapi import FastAPI
+import httpx
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from image_processor import decode_base64_image, fetch_image_from_url
@@ -11,6 +13,85 @@ from ollama_client import generate_completion
 
 
 app = FastAPI(title="Qwen3-VL Backend")
+
+
+class ImageFetchError(Exception):
+    """Raised when fetching an image from URL fails."""
+
+    pass
+
+
+class ErrorDetail(BaseModel):
+    """Error detail model."""
+
+    message: str
+    code: str
+
+
+class ErrorResponse(BaseModel):
+    """Structured error response."""
+
+    error: ErrorDetail
+
+
+@app.exception_handler(httpx.ConnectError)
+async def ollama_connection_error_handler(
+    request: Request, exc: httpx.ConnectError
+) -> JSONResponse:
+    """Handle Ollama connection errors."""
+    return JSONResponse(
+        status_code=503,
+        content={
+            "error": {
+                "message": "Ollama service is not available. Please ensure Ollama is running.",
+                "code": "SERVICE_UNAVAILABLE",
+            }
+        },
+    )
+
+
+@app.exception_handler(ImageFetchError)
+async def image_fetch_error_handler(
+    request: Request, exc: ImageFetchError
+) -> JSONResponse:
+    """Handle image fetch errors."""
+    return JSONResponse(
+        status_code=400,
+        content={
+            "error": {
+                "message": str(exc),
+                "code": "IMAGE_FETCH_FAILED",
+            }
+        },
+    )
+
+
+@app.exception_handler(ValueError)
+async def value_error_handler(request: Request, exc: ValueError) -> JSONResponse:
+    """Handle value errors (e.g., invalid prompt or image format)."""
+    return JSONResponse(
+        status_code=400,
+        content={
+            "error": {
+                "message": str(exc),
+                "code": "BAD_REQUEST",
+            }
+        },
+    )
+
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Handle all other unhandled exceptions."""
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": {
+                "message": "An internal error occurred.",
+                "code": "INTERNAL_ERROR",
+            }
+        },
+    )
 
 
 class ImageData(BaseModel):
@@ -72,8 +153,11 @@ async def generate(request: GenerateRequest) -> GenerateResponse:
 
             # Fetch image if imageUrl is present
             if item.imageUrl:
-                history_image_bytes = await fetch_image_from_url(item.imageUrl)
-                all_images.append(history_image_bytes)
+                try:
+                    history_image_bytes = await fetch_image_from_url(item.imageUrl)
+                    all_images.append(history_image_bytes)
+                except Exception as e:
+                    raise ImageFetchError(str(e)) from e
 
     # Process current image if provided
     current_image_bytes: bytes | None = None
@@ -81,7 +165,10 @@ async def generate(request: GenerateRequest) -> GenerateResponse:
         if request.image.type == "base64":
             current_image_bytes = decode_base64_image(request.image.data)
         elif request.image.type == "url":
-            current_image_bytes = await fetch_image_from_url(request.image.data)
+            try:
+                current_image_bytes = await fetch_image_from_url(request.image.data)
+            except Exception as e:
+                raise ImageFetchError(str(e)) from e
 
     if current_image_bytes:
         all_images.append(current_image_bytes)
