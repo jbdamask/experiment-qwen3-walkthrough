@@ -3,9 +3,26 @@
 Branch: ralph/qwen3-vl-ollama-backend
 Started: 2026-01-20
 
+## Codebase Patterns
+- Run `npm install` before running typecheck/lint (node_modules not committed)
+- Python backend files go in backend/ subdirectory
+- Typecheck is `npm run typecheck`, Lint is `npm run lint`
+
 ## Context
 This backend creates a local Ollama-based server to replace the existing Vercel/cloud API setup.
 Backend files go in backend/ subdirectory alongside the existing React frontend.
 
+---
+
+## 2026-01-21 - US-001
+- What was implemented: Backend directory structure with Python dependencies
+- Files changed:
+  - backend/requirements.txt (created with fastapi, uvicorn[standard], httpx)
+  - backend/main.py (created empty)
+  - backend/ollama_client.py (created empty)
+  - backend/image_processor.py (created empty)
+- **Learnings for future iterations:**
+  - Run `npm install` first before trying to typecheck
+  - Empty Python files don't affect TypeScript typecheck (expected)
 ---
 
