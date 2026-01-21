@@ -1,73 +1,13 @@
-# React + TypeScript + Vite
+This was an experiment with the Ralph loop to make an app.
+I used Ryan Carson's implementation of Ralph, https://github.com/snarktank/ralph
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The idea was random - that is, the app doesn't matter. What I wanted to do is see how fast I could build something in and unattended fashion. But the app does work on my Mac. It has a backend runnable via uvicorn and a node frontend.
+I won't be working on this app anymore.
 
-Currently, two official plugins are available:
+In a nutshell, (this)[https://github.com/jbdamask/scratch/tree/main/EXPERIMENTS/super-simple-ralph-example] is all Ralph is.
+The idea is to start a new Claude session for each feature developed. This gives it a fresh context window, which reduces context rot. The only thing any given loop knows about is it's own work on a task, w whic is similar to how human engineers work. Easy to understand.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+According to Geoffrey Huntley, the one who named the pattern, the most important thing for the software engineer is to write good specifications so that there's minimal ambiguity when Claude works on a task. 
+This is because you run Claude in YOLO mode so you're not around to answer questions.
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+A video walkthrough with explaination is (here)[https://youtu.be/bB4fOUgkfe8].
