@@ -26,3 +26,13 @@ Backend files go in backend/ subdirectory alongside the existing React frontend.
   - Empty Python files don't affect TypeScript typecheck (expected)
 ---
 
+## 2026-01-21 - US-002
+- What was implemented: Base64 image decoding function in image_processor.py
+- Files changed:
+  - backend/image_processor.py (implemented decode_base64_image function)
+- **Learnings for future iterations:**
+  - Python files in backend/ don't need any special TypeScript config - they're ignored by tsc
+  - Use regex pattern matching for data URL parsing to validate format and extract data in one step
+  - Supported mime types: image/jpeg, image/png, image/gif, image/webp
+---
+
