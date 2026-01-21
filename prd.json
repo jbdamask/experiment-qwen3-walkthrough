@@ -15,8 +15,8 @@
         "Typecheck passes"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed with Vite, Tailwind CSS v4, ESLint, and Prettier"
     },
     {
       "id": "US-002",
@@ -31,8 +31,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created Header, Sidebar, and MainLayout components with responsive design using Tailwind CSS"
     },
     {
       "id": "US-003",
@@ -47,8 +47,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 3,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created WelcomeSection, CapabilitiesSection, and UseCasesSection components with styled cards"
     },
     {
       "id": "US-004",
@@ -63,8 +63,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created TextPromptInput component with textarea, submit button, character count, Ctrl+Enter shortcut, and validation"
     },
     {
       "id": "US-005",
@@ -79,8 +79,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created ImageUpload component with file picker, drag-and-drop, preview thumbnail, and clear button"
     },
     {
       "id": "US-006",
@@ -95,8 +95,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created unified ImageInput component with tab-style toggle between file upload and URL input modes, URL validation with regex, and image preview with load success/error feedback"
     },
     {
       "id": "US-007",
@@ -110,8 +110,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created InputPreviewPanel component with 2-column preview of image and text prompt, validation messages, and ready-to-submit badge. Updated TextPromptInput to support controlled mode for state lifting."
     },
     {
       "id": "US-008",
@@ -126,8 +126,8 @@
         "Typecheck passes"
       ],
       "priority": 8,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created Vercel serverless function at api/generate.ts with POST endpoint accepting text/image data, Qwen API integration, comprehensive error handling, and frontend utility in src/utils/api.ts"
     },
     {
       "id": "US-009",
@@ -142,8 +142,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 9,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created ResponseDisplay component with react-markdown for rendering, copy-to-clipboard button with visual feedback, prompt/image context header showing linkage between input and response"
     },
     {
       "id": "US-010",
@@ -158,8 +158,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 10,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created LoadingSpinner component with elapsed time, ErrorMessage component for API errors with retry/dismiss, ValidationError component for input validation, integrated with actual API calls in App.tsx"
     },
     {
       "id": "US-011",
@@ -174,8 +174,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 11,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created SessionContext with SessionProvider for state management, HistoryItem component for displaying exchanges with truncated prompt preview and timestamps, updated Sidebar to show history list. Clicking an item displays the full exchange in the main content area."
     },
     {
       "id": "US-012",
@@ -189,8 +189,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 12,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created FollowUpInput component for asking follow-up questions, ConversationThread component for chat-style visual thread, updated API to pass conversationHistory for context continuity, added ConversationTurn type and addFollowUpToExchange to session context"
     },
     {
       "id": "US-013",
@@ -204,8 +204,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 13,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added pencil icon edit button on HistoryItem, clicking populates prompt input (and URL image if applicable), resubmitting creates a new exchange via existing addExchange flow"
     },
     {
       "id": "US-014",
@@ -221,8 +221,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 14,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created CodeExamplesPanel component with collapsible panel, Python example using requests library, TypeScript example using fetch API, copy button for each example, and a note about API key security"
     },
     {
       "id": "US-015",
@@ -237,8 +237,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 15,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created ExportButton component with dropdown menu for JSON and plain text export options. Export button placed in Sidebar header. Filenames include timestamp (qwen3-vl-conversation-YYYYMMDD-HHMMSS.ext)"
     },
     {
       "id": "US-016",
@@ -253,8 +253,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 16,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created PresetPrompts component with 6 example tasks covering object description, OCR, spatial reasoning, visual Q&A, chart analysis, and scene understanding. Each preset has a sample image from Unsplash and clicking populates both prompt and image inputs."
     },
     {
       "id": "US-017",
@@ -270,8 +270,8 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 17,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added skip link, Escape key sidebar close, focus-visible global styles, arrow key navigation for dropdown menus, ARIA labels for interactive elements, and prefers-reduced-motion support"
     }
   ]
 }

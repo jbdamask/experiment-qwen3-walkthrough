@@ -3,5 +3,389 @@
 # Branch: ralph/qwen3-vl-showcase
 # Started: 2026-01-19
 
+## Codebase Patterns
+- Use Tailwind CSS v4 with `@import "tailwindcss";` in CSS files (not @tailwind directives)
+- Tailwind is configured via `@tailwindcss/vite` plugin, no tailwind.config.js needed
+- Run `npm run typecheck` to verify TypeScript types
+- Run `npm run lint` to run ESLint
+- Run `npm run build` to build for production
+- Components go in `src/components/` with named exports
+- The dev-browser skill is unavailable; use `npm run build` to verify app works
+- API serverless functions go in `api/` folder with Vercel-style handler exports
+- Frontend API utilities are in `src/utils/api.ts` - use `generateCompletion()` to call the API
+- ESLint react-refresh: separate context definition (.ts), provider component (.tsx), and hooks into different files
+- Types/interfaces go in `src/types/` folder, hooks go in `src/hooks/` folder
+- Session state: use useSession() hook from `src/hooks/useSession.ts`
+
+---
+
+## 2026-01-20 - US-001
+- **What was implemented:** Project scaffolding with React + TypeScript
+  - Created Vite React + TypeScript project
+  - Installed and configured Tailwind CSS v4 with Vite plugin
+  - Set up folder structure (src/components, src/pages, src/utils)
+  - Added ESLint configuration with React hooks and TypeScript support
+  - Added Prettier configuration for code formatting
+- **Files changed:**
+  - package.json, package-lock.json - project dependencies
+  - vite.config.ts - Vite configuration with Tailwind plugin
+  - tsconfig.json, tsconfig.app.json, tsconfig.node.json - TypeScript config
+  - eslint.config.js - ESLint configuration
+  - .prettierrc - Prettier configuration
+  - .gitignore - Git ignore patterns
+  - index.html - HTML entry point
+  - src/index.css - Tailwind CSS import
+  - src/main.tsx - React entry point
+  - src/App.tsx - Main app component
+  - src/components/.gitkeep, src/pages/.gitkeep, src/utils/.gitkeep - folder structure
+- **Learnings for future iterations:**
+  - Tailwind CSS v4 uses `@import "tailwindcss";` instead of `@tailwind` directives
+  - Use `@tailwindcss/vite` plugin for Vite integration (no separate tailwind.config.js needed)
+  - Vite creates project with eslint.config.js flat config format
+---
+
+## 2026-01-20 - US-002
+- **What was implemented:** App layout shell with header and main content area
+  - Created Header component with app title 'Qwen3-VL Showcase' and mobile menu toggle
+  - Created Sidebar component placeholder for session history with responsive behavior
+  - Created MainLayout component combining header, sidebar, and main content area
+  - Updated App.tsx to use the new layout components
+  - Removed unused App.css (using Tailwind CSS only)
+- **Files changed:**
+  - src/components/Header.tsx - new header component with responsive design
+  - src/components/Sidebar.tsx - new sidebar placeholder component
+  - src/components/MainLayout.tsx - new layout wrapper component
+  - src/App.tsx - updated to use MainLayout
+  - src/App.css - deleted (unused)
+- **Learnings for future iterations:**
+  - Components are in src/components/ directory
+  - Use Tailwind's responsive prefixes (sm:, md:, lg:) for breakpoints
+  - Mobile-first approach with sidebar hidden by default on small screens
+  - The dev-browser skill is not available in this environment; use `npm run build` to verify
+---
+
+## 2026-01-20 - US-003
+- **What was implemented:** Welcome and overview section
+  - Created WelcomeSection component with gradient hero styling, model name, and description
+  - Created CapabilitiesSection component with 4 capabilities (visual reasoning, Q&A, instruction following, OCR)
+  - Created UseCasesSection component with 4 common use cases and example prompts
+  - Updated App.tsx to compose all sections together
+- **Files changed:**
+  - src/components/WelcomeSection.tsx - new hero component with gradient styling
+  - src/components/CapabilitiesSection.tsx - capabilities grid with icons and descriptions
+  - src/components/UseCasesSection.tsx - use cases list with example prompts
+  - src/App.tsx - updated to use new section components
+- **Learnings for future iterations:**
+  - Use consistent spacing with Tailwind's `space-y-6` for vertical sections
+  - Use `role="img"` and `aria-label` for emoji icons for accessibility
+  - Card hover states work well with `hover:border-*` and `hover:bg-*` combinations
+---
+
+## 2026-01-20 - US-004
+- **What was implemented:** Text prompt input component
+  - Created TextPromptInput component with textarea for entering prompts
+  - Added submit button with disabled state when input is empty or over limit
+  - Character count display showing current/max characters
+  - Max length validation with visual feedback (red border when over limit)
+  - Ctrl+Enter keyboard shortcut for quick submission
+  - Proper accessibility with aria-label and aria-describedby attributes
+  - Integrated component into App.tsx with handlePromptSubmit callback
+- **Files changed:**
+  - src/components/TextPromptInput.tsx - new component with textarea, submit button, character count
+  - src/App.tsx - added TextPromptInput with onSubmit handler
+- **Learnings for future iterations:**
+  - Use `aria-describedby` to link character count to textarea for screen readers
+  - Conditional styling with template literals works well for validation states
+  - Consider keyboard shortcuts (Ctrl+Enter) for form submission in text-heavy inputs
+---
+
+## 2026-01-20 - US-005
+- **What was implemented:** Image upload via file picker
+  - Created ImageUpload component with file input accepting JPG, PNG, GIF, WebP
+  - Drag and drop zone with visual feedback when dragging
+  - Preview thumbnail displaying uploaded image with max-height constraint
+  - Clear/remove button with both an X button on the thumbnail and a text button below
+  - File size validation (10MB max) with error messages
+  - File type validation with user-friendly error messages
+  - Keyboard accessibility with Enter/Space support on the drop zone
+  - Integrated component into App.tsx with handleImageChange callback
+- **Files changed:**
+  - src/components/ImageUpload.tsx - new component with file picker, drag-and-drop, preview, validation
+  - src/App.tsx - added ImageUpload with onImageChange handler
+- **Learnings for future iterations:**
+  - Use `URL.createObjectURL()` for creating preview URLs and `URL.revokeObjectURL()` for cleanup
+  - Drag and drop requires handling dragEnter, dragLeave, dragOver, and drop events
+  - Reset file input by setting `.value = ""` when clearing
+  - Use role="button" and tabIndex for keyboard accessibility on non-button elements
+---
+
+## 2026-01-20 - US-006
+- **What was implemented:** Image input via URL
+  - Created unified ImageInput component that replaces ImageUpload
+  - Tab-style toggle to switch between "Upload File" and "From URL" modes
+  - URL text input with http/https format validation using regex
+  - Image preview for URL mode with onLoad/onError handling
+  - Green checkmark indicator when URL image loads successfully
+  - Error messages for invalid URLs or failed image loads
+  - Clear button in URL mode to reset input
+  - Preserved all file upload functionality from previous ImageUpload component
+  - Updated App.tsx to handle both file and URL image data
+- **Files changed:**
+  - src/components/ImageInput.tsx - new unified component with file/URL toggle
+  - src/components/ImageUpload.tsx - deleted (replaced by ImageInput)
+  - src/App.tsx - updated to use ImageInput with new callback signature
+- **Learnings for future iterations:**
+  - Use role="tablist" and role="tab" with aria-selected for toggle UIs
+  - Image onLoad/onError events are useful for validating URL images
+  - Clear state when switching modes to avoid stale data
+  - Combined components are cleaner than separate related components
+---
+
+## 2026-01-20 - US-007
+- **What was implemented:** Combined input preview panel
+  - Created InputPreviewPanel component showing text prompt and image together
+  - Two-column responsive grid layout (image on left, prompt on right)
+  - Validation messages panel listing missing inputs (image, prompt, over limit)
+  - Ready-to-submit badge (green with checkmark) when all inputs valid
+  - Incomplete badge (amber with warning icon) when validation fails
+  - Proper object URL lifecycle management with useMemo and useEffect
+  - Updated TextPromptInput to support controlled mode (value + onChange props)
+  - Lifted prompt state to App.tsx to share with InputPreviewPanel
+- **Files changed:**
+  - src/components/InputPreviewPanel.tsx - new component with preview and validation
+  - src/components/TextPromptInput.tsx - added value and onChange props for controlled mode
+  - src/App.tsx - lifted prompt state, added InputPreviewPanel
+- **Learnings for future iterations:**
+  - ESLint react-hooks/set-state-in-effect forbids setState inside useEffect
+  - Use useMemo for URL.createObjectURL and useEffect+useRef for cleanup
+  - Support both controlled and uncontrolled modes in input components for flexibility
+  - Use useMemo with ?? operator for computed values with fallbacks
+---
+
+## 2026-01-20 - US-008
+- **What was implemented:** API proxy serverless function
+  - Created Vercel-compatible serverless function at api/generate.ts
+  - POST endpoint accepting prompt (string) and optional image (file/url type with data)
+  - Forwards requests to Qwen3-VL API (dashscope.aliyuncs.com compatible endpoint)
+  - Request body validation with helpful error messages
+  - Comprehensive error handling for API failures, network errors, and config errors
+  - Supports both base64 file uploads and URL images
+  - Returns structured response with id, content, and usage stats
+  - Created frontend utility module at src/utils/api.ts with generateCompletion function
+  - Added @vercel/node for serverless function types
+  - Created tsconfig.api.json for API folder TypeScript compilation
+- **Files changed:**
+  - api/generate.ts - new serverless function for Qwen3-VL API proxy
+  - src/utils/api.ts - new utility module with API types and helper functions
+  - tsconfig.api.json - new TypeScript config for api/ folder
+  - tsconfig.json - added reference to tsconfig.api.json
+  - package.json, package-lock.json - added @vercel/node dependency
+  - prd.json - marked US-008 as passed
+- **Learnings for future iterations:**
+  - Use separate tsconfig files for different execution contexts (browser vs node)
+  - Vercel serverless functions go in api/ folder with export default handler
+  - Use satisfies keyword for type-safe response objects
+  - Environment variables: QWEN_API_KEY, QWEN_API_ENDPOINT, QWEN_MODEL
+  - Base64 images need data URI prefix for Qwen API (data:image/jpeg;base64,...)
+---
+
+## 2026-01-20 - US-009
+- **What was implemented:** Response display component
+  - Created ResponseDisplay component with distinct visual styling
+  - Integrated react-markdown for rendering markdown content in responses
+  - Added copy-to-clipboard button with visual feedback (Copied! state)
+  - Included prompt/image context header showing linkage to the input
+  - Custom markdown components for code blocks, lists, headings, blockquotes, links
+  - Integrated component into App.tsx with placeholder demo response
+  - Added response state management to App.tsx
+- **Files changed:**
+  - src/components/ResponseDisplay.tsx - new component with markdown rendering and copy button
+  - src/App.tsx - added response state, integrated ResponseDisplay
+  - package.json, package-lock.json - added react-markdown dependency
+- **Learnings for future iterations:**
+  - Use react-markdown with custom components prop for styled rendering
+  - navigator.clipboard.writeText() for copy-to-clipboard functionality
+  - Store submitted prompt/image separately for display in response context
+  - Use line-clamp-2 Tailwind class for text truncation
+---
+
+## 2026-01-20 - US-010
+- **What was implemented:** Loading states and error handling UI
+  - Created LoadingSpinner component with animated spinner and elapsed time indicator
+  - Elapsed time updates every second with warning message after 30s
+  - Created ErrorMessage component for API errors with retry/dismiss buttons
+  - Created ValidationError component for displaying input validation issues
+  - Integrated actual API calls in App.tsx using generateCompletion from utils/api.ts
+  - Added validation logic (prompt required, max 4000 chars) before submission
+  - Proper state management for isLoading, error, and validationErrors
+- **Files changed:**
+  - src/components/LoadingSpinner.tsx - new component with spinner, elapsed time, accessibility
+  - src/components/ErrorMessage.tsx - ErrorMessage and ValidationError components
+  - src/App.tsx - integrated loading/error states, actual API calls, validation
+- **Learnings for future iterations:**
+  - Don't call impure functions (Date.now()) during render - use inside useEffect
+  - Don't call setState synchronously in useEffect body - use initial state value instead
+  - Use useCallback for handlers that depend on state to avoid stale closures
+  - role="status" and aria-live="polite" for loading indicators for screen readers
+  - role="alert" and aria-live="assertive" for error messages for screen readers
+---
+
+## 2026-01-20 - US-011
+- **What was implemented:** Session history sidebar
+  - Created SessionContext (sessionContextDef.ts + SessionContext.tsx) for global history state
+  - Created HistoryExchange type in src/types/session.ts for type safety
+  - Created useSession hook in src/hooks/useSession.ts for consuming context
+  - Created HistoryItem component showing truncated prompt preview, image thumbnail, and timestamp
+  - Updated Sidebar component to display list of past exchanges with selection state
+  - Updated App.tsx to integrate with session context: adds exchanges on API success, displays selected exchange
+  - Exchange count shown in sidebar header when history exists
+  - Auto-clears selection when user starts typing a new prompt
+- **Files changed:**
+  - src/types/session.ts - new HistoryExchange type definition
+  - src/contexts/sessionContextDef.ts - new context definition (separated for ESLint react-refresh)
+  - src/contexts/SessionContext.tsx - new SessionProvider component
+  - src/hooks/useSession.ts - new hook for consuming session context
+  - src/components/HistoryItem.tsx - new component for individual history entries
+  - src/components/Sidebar.tsx - updated with history list and selection
+  - src/main.tsx - wrapped App with SessionProvider
+  - src/App.tsx - integrated session context for history management
+- **Learnings for future iterations:**
+  - ESLint react-refresh/only-export-components forbids exporting hooks and React context from same file as components
+  - Separate context definition (createContext) into its own .ts file, provider component into .tsx, and hook into hooks folder
+  - Use crypto.randomUUID() for generating unique IDs client-side
+  - State persistence in React context is sufficient for session-scoped data (no localStorage needed)
+---
+
+## 2026-01-20 - US-012
+- **What was implemented:** Context-aware follow-up prompts
+  - Created FollowUpInput component with auto-resizing textarea and Ctrl+Enter submission
+  - Created ConversationThread component showing chat-style visual thread with timestamps
+  - Added ConversationTurn type in src/types/session.ts for tracking individual turns
+  - Updated HistoryExchange to include conversationHistory array
+  - Extended session context with addFollowUpToExchange function
+  - Updated API (api/generate.ts) to accept and process conversationHistory for context continuity
+  - Updated frontend API utility to pass conversation history
+  - Integrated conversation display in App.tsx with follow-up input after responses
+- **Files changed:**
+  - src/types/session.ts - added ConversationTurn type, extended HistoryExchange
+  - src/contexts/sessionContextDef.ts - added addFollowUpToExchange to context value
+  - src/contexts/SessionContext.tsx - implemented addFollowUpToExchange, initialize conversationHistory
+  - src/utils/api.ts - added conversationHistory parameter to generateCompletion
+  - api/generate.ts - updated buildMessages to include conversation history
+  - src/components/FollowUpInput.tsx - new follow-up input component
+  - src/components/ConversationThread.tsx - new visual thread component with markdown rendering
+  - src/App.tsx - integrated conversation thread and follow-up input
+- **Learnings for future iterations:**
+  - Use role-based styling (user/assistant) for chat-style interfaces with flex justify-end/start
+  - Pass conversation history as array of turns for multi-turn context in vision-language models
+  - Auto-resize textarea using scrollHeight in useEffect based on value changes
+---
+
+## 2026-01-20 - US-013
+- **What was implemented:** Editable prompt history
+  - Added edit button (pencil icon) to HistoryItem component
+  - Edit handler passed through Sidebar to MainLayout to App.tsx
+  - Clicking edit populates prompt input with previous prompt text
+  - If exchange had a URL image (not blob), restores it in ImageInput
+  - Resubmitting creates a new exchange (existing addExchange flow)
+  - ImageInput now supports initialUrl prop with key-based remount for resetting state
+- **Files changed:**
+  - src/components/HistoryItem.tsx - added onEdit prop and edit button with pencil icon
+  - src/components/Sidebar.tsx - added onEditExchange prop and handler
+  - src/components/MainLayout.tsx - added onEditExchange prop, passed to Sidebar
+  - src/components/ImageInput.tsx - added initialUrl prop for controlled initial state
+  - src/App.tsx - added handleEditExchange, imageInputKey, imageInputInitialUrl for edit flow
+- **Learnings for future iterations:**
+  - Use key prop to force component remount when you need to reset internal state
+  - ESLint react-hooks/set-state-in-effect forbids setState in effects; use initial state values instead
+  - ESLint react-hooks/refs forbids accessing refs during render; avoid refs for state tracking
+  - Blob URLs are temporary and won't survive component remounts; only restore URL-based images
+---
+
+## 2026-01-20 - US-014
+- **What was implemented:** Code examples panel with Python and JavaScript
+  - Created CodeExamplesPanel component with collapsible panel (click header to expand/collapse)
+  - Added Python example using the requests library with both URL and file upload methods
+  - Added TypeScript example using fetch API with typed interfaces and both input methods
+  - Dark theme code blocks (bg-gray-900) with monospace font for syntax styling
+  - Copy button for each code example with visual feedback ("Copied!" state)
+  - Note/warning about API key security at the bottom of the panel
+  - Integrated into App.tsx after UseCasesSection
+- **Files changed:**
+  - src/components/CodeExamplesPanel.tsx - new component with collapsible panel and code examples
+  - src/App.tsx - added import and included CodeExamplesPanel in layout
+- **Learnings for future iterations:**
+  - For syntax highlighting without external libraries, use dark background (bg-gray-900) with light text (text-gray-100) for code blocks
+  - Use template literals for multi-line code strings to preserve formatting
+  - Collapsible panels use aria-expanded and aria-controls for accessibility
+  - Sub-components (like CodeExample) can be defined in the same file if only used by the main component
+---
+
+## 2026-01-20 - US-015
+- **What was implemented:** Export conversation transcript
+  - Created ExportButton component with dropdown menu for export options
+  - Export as JSON with structured data (conversation metadata, timestamps, turns)
+  - Export as plain text with readable conversation format
+  - Filenames include timestamp (qwen3-vl-conversation-YYYYMMDD-HHMMSS.ext)
+  - Dropdown closes when clicking outside or pressing Escape
+  - Button disabled when no exchanges exist
+  - Integrated export button into Sidebar header next to "Session History" title
+- **Files changed:**
+  - src/components/ExportButton.tsx - new component with export dropdown and download logic
+  - src/components/Sidebar.tsx - added ExportButton integration in header
+- **Learnings for future iterations:**
+  - Use Blob and URL.createObjectURL for client-side file downloads
+  - Don't forget to call URL.revokeObjectURL after triggering download
+  - Use role="menu" and role="menuitem" with aria-haspopup/aria-expanded for dropdown menus
+  - Close dropdowns on mousedown (not click) for better UX with button interactions
+---
+
+## 2026-01-20 - US-016
+- **What was implemented:** Preset example prompts
+  - Created PresetPrompts component with 6 preset examples
+  - Examples cover: object description, OCR (text extraction), spatial reasoning, visual Q&A, chart analysis, scene understanding
+  - Each preset has a sample image from Unsplash (w=800 for reasonable size)
+  - Category badges with color-coding (blue, green, purple, amber, rose)
+  - Grid layout (1 col mobile, 2 cols md, 3 cols lg)
+  - Clicking a preset populates both the prompt input and image URL input
+  - Uses the same remount pattern (imageInputKey + imageInputInitialUrl) as edit exchange
+  - Added handleSelectPreset callback to App.tsx
+  - Disabled state during loading
+- **Files changed:**
+  - src/components/PresetPrompts.tsx - new component with preset cards and selection handler
+  - src/App.tsx - added import, handleSelectPreset callback, and PresetPrompts integration
+  - prd.json - marked US-016 as passed
+- **Learnings for future iterations:**
+  - Reuse the imageInputKey + imageInputInitialUrl pattern to populate ImageInput from external sources
+  - Use loading="lazy" on images for better performance in grids
+  - Unsplash images support ?w=800 query param for sizing
+  - Category-based color coding makes UI scannable
+---
+
+## 2026-01-20 - US-017
+- **What was implemented:** Keyboard navigation and accessibility
+  - Added skip link in MainLayout for keyboard users to skip to main content
+  - Added Escape key handling to close mobile sidebar
+  - Added close button visible on mobile sidebar for easy closing
+  - Added focus management when sidebar opens (focuses close button)
+  - Added global focus-visible styles in index.css with proper outline
+  - Added prefers-reduced-motion media query for reduced motion accessibility
+  - Improved ExportButton dropdown with arrow key navigation
+  - Added focus-ring styles to HistoryItem buttons
+  - Added ARIA labels and proper tabIndex attributes throughout
+  - All interactive elements are now keyboard focusable
+- **Files changed:**
+  - src/components/MainLayout.tsx - added skip link, Escape key handling
+  - src/components/Sidebar.tsx - added close button, focus management
+  - src/components/ExportButton.tsx - added arrow key navigation for dropdown
+  - src/components/HistoryItem.tsx - improved focus ring styles
+  - src/index.css - added global focus-visible and reduced-motion styles
+  - prd.json - marked US-017 as passed
+- **Learnings for future iterations:**
+  - Use focus-visible pseudo-class for keyboard-only focus indicators
+  - Reset state in click handlers instead of useEffect to avoid ESLint react-hooks/set-state-in-effect errors
+  - Use refs to manage focus between menu items in dropdowns
+  - Add prefers-reduced-motion for accessibility compliance
+  - Skip links should be sr-only with focus:not-sr-only for visibility when focused
 ---
 
