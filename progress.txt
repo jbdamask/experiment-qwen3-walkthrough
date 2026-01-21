@@ -95,3 +95,15 @@ Backend files go in backend/ subdirectory alongside the existing React frontend.
   - General Exception handler catches all other errors with INTERNAL_ERROR code
 ---
 
+## 2026-01-21 - US-008
+- What was implemented: Vite proxy configuration to route /api requests to backend
+- Files changed:
+  - vite.config.ts (added server.proxy configuration)
+- **Learnings for future iterations:**
+  - Vite proxy config goes under `server.proxy` key in defineConfig
+  - Use `/api` as the key to match all requests starting with /api
+  - `target` specifies the backend URL (http://localhost:8000)
+  - `changeOrigin: true` is needed to update Host header for the target server
+  - This setup allows frontend fetch('/api/generate') to reach the backend without CORS issues
+---
+
