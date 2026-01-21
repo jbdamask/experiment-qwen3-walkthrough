@@ -107,3 +107,13 @@ Backend files go in backend/ subdirectory alongside the existing React frontend.
   - This setup allows frontend fetch('/api/generate') to reach the backend without CORS issues
 ---
 
+## 2026-01-21 - US-009
+- What was implemented: Backend README with setup instructions
+- Files changed:
+  - backend/README.md (created with Ollama installation, model setup, Python setup, and running instructions)
+- **Learnings for future iterations:**
+  - README.md files don't affect TypeScript typecheck (as expected, Markdown files are ignored)
+  - Include a full workflow section showing all terminals/commands needed to run the full stack
+  - Document API endpoints with example request/response for developer reference
+---
+
