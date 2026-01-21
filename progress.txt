@@ -70,3 +70,15 @@ Backend files go in backend/ subdirectory alongside the existing React frontend.
   - Generate UUIDs with `str(uuid.uuid4())` for response IDs
 ---
 
+## 2026-01-21 - US-006
+- What was implemented: Conversation history support for multi-turn conversations
+- Files changed:
+  - backend/main.py (added ConversationHistoryItem model, updated endpoint to process history)
+- **Learnings for future iterations:**
+  - ConversationHistoryItem has: role (str), content (str), imageUrl (Optional[str])
+  - Process conversation history first, then append current prompt as final user message
+  - All images (from history and current) are collected into a single list for ollama_client
+  - Empty conversationHistory (None or empty list) works correctly - messages list just starts empty
+  - The ollama_client attaches all images to the last user message in the messages list
+---
+
