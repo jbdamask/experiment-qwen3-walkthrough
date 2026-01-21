@@ -46,3 +46,15 @@ Backend files go in backend/ subdirectory alongside the existing React frontend.
   - Use context manager (async with) for httpx.AsyncClient to properly manage connections
 ---
 
+## 2026-01-21 - US-004
+- What was implemented: Ollama client for vision chat completions
+- Files changed:
+  - backend/ollama_client.py (implemented generate_completion async function)
+- **Learnings for future iterations:**
+  - Ollama API endpoint for chat is `/api/chat` at `http://localhost:11434`
+  - Images are passed as base64-encoded strings in an `images` array on the user message
+  - Use longer timeout (120s) for model inference since vision models can be slow
+  - Response contains `message.content`, `prompt_eval_count`, and `eval_count` fields
+  - httpx.ConnectError is raised automatically when Ollama server is not reachable
+---
+
