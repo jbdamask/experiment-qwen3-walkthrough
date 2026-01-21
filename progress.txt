@@ -58,3 +58,15 @@ Backend files go in backend/ subdirectory alongside the existing React frontend.
   - httpx.ConnectError is raised automatically when Ollama server is not reachable
 ---
 
+## 2026-01-21 - US-005
+- What was implemented: FastAPI POST /api/generate endpoint with Pydantic models
+- Files changed:
+  - backend/main.py (implemented endpoint with request/response models)
+- **Learnings for future iterations:**
+  - Use Pydantic BaseModel for request/response validation in FastAPI
+  - ImageData model has `type` ("base64" or "url") and `data` fields
+  - Use `Optional[Type] = None` for optional fields in Pydantic models
+  - Map Ollama's `prompt_eval_count` -> `prompt_tokens`, `eval_count` -> `completion_tokens`
+  - Generate UUIDs with `str(uuid.uuid4())` for response IDs
+---
+
