@@ -36,3 +36,13 @@ Backend files go in backend/ subdirectory alongside the existing React frontend.
   - Supported mime types: image/jpeg, image/png, image/gif, image/webp
 ---
 
+## 2026-01-21 - US-003
+- What was implemented: Async function to fetch images from URLs using httpx
+- Files changed:
+  - backend/image_processor.py (added fetch_image_from_url async function)
+- **Learnings for future iterations:**
+  - httpx.AsyncClient timeout parameter takes a float in seconds (e.g., 10.0 for 10 seconds)
+  - Handle specific httpx exceptions: TimeoutException, HTTPStatusError, RequestError for descriptive error messages
+  - Use context manager (async with) for httpx.AsyncClient to properly manage connections
+---
+
